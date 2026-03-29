@@ -6,31 +6,42 @@ module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: "ANTHROPIC_API_KEY not configured" });
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: "GEMINI_API_KEY not set in Vercel environment variables" });
+  }
 
   try {
-    const { system, messages } = req.body;
+    const { system, history } = req.body;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 2048,
-        system: system,
-        messages: messages,
-        tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 3 }],
+        system_instruction: { parts: [{ text: system }] },
+        contents: history,
+        generationConfig: {
+          maxOutputTokens: 2048,
+          temperature: 0.3,
+        },
       }),
     });
 
     const data = await response.json();
-    if (!response.ok) return res.status(response.status).json(data);
-    return res.status(200).json(data);
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error: data?.error?.message || "Gemini API error",
+      });
+    }
+
+    const reply =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "Unable to generate response.";
+
+    return res.status(200).json({ reply });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
