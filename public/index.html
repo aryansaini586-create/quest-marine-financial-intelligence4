@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quest Marine LLC — Financial Intelligence System</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://js.puter.com/v2/"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -1017,44 +1018,22 @@ async function sendChat(overrideText) {
   document.getElementById('sendBtn').disabled = true;
 
   try {
-    // Try Claude API first
-    const apiMessages = chatHistory.map(m => ({ role: m.role, content: m.content }));
-    // Try Vercel proxy first (/api/chat), then direct API, then local fallback
-    const apiPayload = JSON.stringify({
-      system: SYSTEM_PROMPT,
-      messages: apiMessages,
-    });
-    const apiHeaders = { "Content-Type": "application/json" };
+    // Build messages array with system prompt as first user context
+    const msgs = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...chatHistory.map(m => ({ role: m.role, content: m.content }))
+    ];
 
-    let resp;
-    try {
-      // Attempt 1: Vercel serverless proxy (works when deployed on Vercel)
-      resp = await fetch("/api/chat", { method: "POST", headers: apiHeaders, body: apiPayload });
-      if (!resp.ok) throw new Error('proxy-fail');
-    } catch {
-      // Attempt 2: Direct API call (works locally if no CORS or in some environments)
-      resp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST", headers: apiHeaders,
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1500, system: SYSTEM_PROMPT, messages: apiMessages }),
-      });
-    }
+    // Use Puter.js FREE AI — no API key, no server needed
+    const response = await puter.ai.chat(msgs, {
+      model: 'claude-sonnet-4-20250514',
+      stream: false,
+    });
 
     removeTyping(typingId);
 
-    if (!resp.ok) throw new Error('API ' + resp.status);
-
-    const data = await resp.json();
-    
-    // Extract text from all content blocks (handles web search tool results)
-    let reply = '';
-    if (data.content && Array.isArray(data.content)) {
-      for (const block of data.content) {
-        if (block.type === 'text' && block.text) {
-          reply += block.text + '\n';
-        }
-      }
-    }
-    reply = reply.trim() || buildAnswer(text);
+    const reply = (typeof response === 'string') ? response
+      : response?.message?.content || response?.text || response?.toString() || buildAnswer(text);
 
     addChatMsg('assistant', reply);
     chatHistory.push({ role: 'assistant', content: reply });
