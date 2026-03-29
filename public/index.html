@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quest Marine LLC — Financial Intelligence System</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://js.puter.com/v2/"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -417,8 +416,8 @@ tr.bold-row { font-weight: 700; background: rgba(0,51,102,0.03); }
     </div>
   </div>
   <div class="header-right">
-    <div>Data: 2019–2025</div>
-    <div>Audited through 2024</div>
+    <div>Data: 2019–2025 · Audited through 2024</div>
+    <div style="margin-top:2px;font-size:10px;color:rgba(255,255,255,0.5)">Powered by Google Gemini AI</div>
   </div>
 </div>
 
@@ -438,12 +437,11 @@ tr.bold-row { font-weight: 700; background: rgba(0,51,102,0.03); }
     <div class="chat-messages" id="chatMessages">
       <div class="msg assistant">
         <div class="msg-label">⚓ QM Financial Intelligence</div>
-        <div>Welcome to Quest Marine's <strong>AI-Powered</strong> Financial Intelligence System with <strong>live web search</strong>.<br><br>
-        I can answer <strong>anything</strong> — QM financials, marine industry, finance concepts, market trends, and more:<br>
+        <div>Welcome to Quest Marine's <strong>AI-Powered</strong> Financial Intelligence System.<br>I have access to <strong>all verified financial data from 2019–2025</strong> and can answer <strong>any question</strong> — QM financials, marine industry, finance concepts, and more.<br><br>
         • <strong>QM Financials</strong> — revenue, profit, costs, ratios, balance sheet, cash flow, pipeline, projections<br>
         • <strong>Industry & Strategy</strong> — marine market trends, competitor analysis, growth strategies<br>
-        • <strong>Finance Concepts</strong> — DCF, LBO, WACC, valuation methods, financial modeling<br>
-        • <strong>Live Search</strong> — current shipping rates, market news, regulatory updates, industry reports</div>
+        • <strong>Finance Concepts</strong> — DCF, LBO, WACC, valuation methods, financial modeling<br><br>
+        Just type your question below and hit Send!</div>
       </div>
     </div>
 
@@ -1001,6 +999,9 @@ Total Indirect: 3,891,246→4,350,691→5,180,583→5,959,651
 
 const chatHistory = [];
 
+// ═══ AI CHAT: Proxied through Vercel → Google Gemini (YOUR key on server) ═══
+// Users never need an API key — your Gemini key is stored securely in Vercel env vars
+
 async function sendChat(overrideText) {
   const input = document.getElementById('chatInput');
   const text = overrideText || input.value.trim();
@@ -1011,39 +1012,40 @@ async function sendChat(overrideText) {
   if (sa) sa.style.display = 'none';
 
   addChatMsg('user', text);
-  chatHistory.push({ role: 'user', content: text });
+  chatHistory.push({ role: 'user', parts: [{ text: text }] });
 
   const typingId = addTypingIndicator();
   input.disabled = true;
   document.getElementById('sendBtn').disabled = true;
 
   try {
-    // Build messages array with system prompt as first user context
-    const msgs = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...chatHistory.map(m => ({ role: m.role, content: m.content }))
-    ];
-
-    // Use Puter.js FREE AI — no API key, no server needed
-    const response = await puter.ai.chat(msgs, {
-      model: 'claude-sonnet-4-20250514',
-      stream: false,
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system: SYSTEM_PROMPT,
+        history: chatHistory,
+      }),
     });
 
     removeTyping(typingId);
 
-    const reply = (typeof response === 'string') ? response
-      : response?.message?.content || response?.text || response?.toString() || buildAnswer(text);
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err?.error || 'Server error ' + resp.status);
+    }
 
+    const data = await resp.json();
+    const reply = data?.reply || buildAnswer(text);
+
+    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
     addChatMsg('assistant', reply);
-    chatHistory.push({ role: 'assistant', content: reply });
 
   } catch (err) {
-    // Fallback to local intelligence engine
     removeTyping(typingId);
     const localReply = buildAnswer(text);
     addChatMsg('assistant', localReply);
-    chatHistory.push({ role: 'assistant', content: localReply });
+    chatHistory.push({ role: 'model', parts: [{ text: localReply }] });
   }
 
   input.disabled = false;
