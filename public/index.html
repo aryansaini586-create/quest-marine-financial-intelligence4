@@ -412,7 +412,7 @@ tr.bold-row { font-weight: 700; background: rgba(0,51,102,0.03); }
     <div class="logo">⚓</div>
     <div>
       <div class="header-title">QUEST MARINE LLC</div>
-      <div class="header-sub">Financial Intelligence System</div>
+      <div class="header-sub">AI Financial Intelligence · Live Search · Powered by Claude</div>
     </div>
   </div>
   <div class="header-right">
@@ -437,32 +437,32 @@ tr.bold-row { font-weight: 700; background: rgba(0,51,102,0.03); }
     <div class="chat-messages" id="chatMessages">
       <div class="msg assistant">
         <div class="msg-label">⚓ QM Financial Intelligence</div>
-        <div>Welcome to Quest Marine's <strong>AI-Powered</strong> Financial Intelligence System. I have access to <strong>all verified financial data from 2019–2025</strong> (audited through 2024, management accounts for 2025).<br><br>
-        I'm powered by Claude AI with all QM financial data embedded — ask me <strong>anything</strong> about:<br>
-        • <strong>Financial Analysis</strong> — profitability, cost structure, efficiency metrics, ratios, EBITDA, working capital<br>
-        • <strong>Industry Benchmarking</strong> — comparisons with peer marine service firms<br>
-        • <strong>Forward Budget</strong> — revenue projections, scenario analysis, break-even, DuPont, Z-Score<br>
-        • <strong>Company Intel</strong> — team details, services, shareholders, geographic markets, pipeline</div>
+        <div>Welcome to Quest Marine's <strong>AI-Powered</strong> Financial Intelligence System with <strong>live web search</strong>.<br><br>
+        I can answer <strong>anything</strong> — QM financials, marine industry, finance concepts, market trends, and more:<br>
+        • <strong>QM Financials</strong> — revenue, profit, costs, ratios, balance sheet, cash flow, pipeline, projections<br>
+        • <strong>Industry & Strategy</strong> — marine market trends, competitor analysis, growth strategies<br>
+        • <strong>Finance Concepts</strong> — DCF, LBO, WACC, valuation methods, financial modeling<br>
+        • <strong>Live Search</strong> — current shipping rates, market news, regulatory updates, industry reports</div>
       </div>
     </div>
 
     <div class="suggested-area" id="suggestedArea">
-      <div class="pillar-label">📊 Financial Analysis</div>
+      <div class="pillar-label">📊 QM Financial Analysis</div>
       <div class="suggested-btns">
-        <button class="suggested-btn" onclick="askSuggested(this)">What are QM's key profitability trends from 2019-2025?</button>
-        <button class="suggested-btn" onclick="askSuggested(this)">Analyze the cost structure — where is money going?</button>
-        <button class="suggested-btn" onclick="askSuggested(this)">Calculate Revenue per Employee across all years</button>
+        <button class="suggested-btn" onclick="askSuggested(this)">Give me a complete financial health assessment of QM</button>
         <button class="suggested-btn" onclick="askSuggested(this)">Why is net profit declining despite revenue growth?</button>
+        <button class="suggested-btn" onclick="askSuggested(this)">Calculate all key ratios with trend analysis</button>
       </div>
-      <div class="pillar-label">🏢 Industry Benchmarking</div>
+      <div class="pillar-label">🏢 Industry & Strategy</div>
       <div class="suggested-btns">
-        <button class="suggested-btn" onclick="askSuggested(this)">How does QM compare to similar marine service firms?</button>
-        <button class="suggested-btn" onclick="askSuggested(this)">Is QM's gross margin competitive for a marine surveyor?</button>
+        <button class="suggested-btn" onclick="askSuggested(this)">What are current trends in the marine survey industry?</button>
+        <button class="suggested-btn" onclick="askSuggested(this)">How should QM position itself for growth in APAC?</button>
+        <button class="suggested-btn" onclick="askSuggested(this)">Analyze the Dubai maritime sector outlook</button>
       </div>
-      <div class="pillar-label">📐 Forward Budget</div>
+      <div class="pillar-label">📐 Finance & Valuation</div>
       <div class="suggested-btns">
-        <button class="suggested-btn" onclick="askSuggested(this)">Project 2026 revenue using the job-based model</button>
-        <button class="suggested-btn" onclick="askSuggested(this)">What revenue is needed to achieve AED 1M net profit?</button>
+        <button class="suggested-btn" onclick="askSuggested(this)">What valuation methods would work best for QM?</button>
+        <button class="suggested-btn" onclick="askSuggested(this)">Explain DCF valuation and apply it to QM's cash flows</button>
       </div>
     </div>
 
@@ -901,8 +901,20 @@ function askSuggested(btn) {
   sendChat(btn.textContent);
 }
 
-// ═══ CLAUDE API SYSTEM PROMPT — ALL FINANCIAL DATA EMBEDDED ═══
-const SYSTEM_PROMPT = `You are Quest Marine LLC's Financial Intelligence Assistant embedded in their internal dashboard. Answer EVERY question using ONLY the verified data below. Never fabricate numbers. Be concise, cite exact AED figures, use bullet points.
+// ═══ CLAUDE API SYSTEM PROMPT — QM DATA + GENERAL INTELLIGENCE + WEB SEARCH ═══
+const SYSTEM_PROMPT = `You are Quest Marine LLC's AI-powered Financial Intelligence Assistant. You have TWO capabilities:
+
+**CAPABILITY 1 — QM Financial Data (use this for any QM-specific question):**
+You have ALL of Quest Marine's verified financial data embedded below. For any question about QM's finances, revenue, costs, team, operations, ratios, projections etc — answer ONLY from this data. Never fabricate QM numbers.
+
+**CAPABILITY 2 — General Intelligence (use this for everything else):**
+For questions about marine industry trends, finance concepts (DCF, LBO, WACC, valuation), business strategy, market analysis, economic conditions, UAE business environment, shipping industry, insurance industry, competitor analysis, career advice, or ANY other topic — use your general knowledge to give helpful, accurate answers. You are a knowledgeable financial analyst and marine industry expert.
+
+When the user asks about both (e.g. "How does QM compare to industry trends?"), combine QM data with general knowledge.
+
+Always be helpful. Never refuse to answer. If unsure whether it's about QM or general, provide both perspectives.
+
+═══ QUEST MARINE LLC — COMPLETE FINANCIAL DATA ═══
 
 ## COMPANY
 Quest Marine LLC (QM) — B2B marine surveying & consultancy, Dubai UAE. Est 16 Dec 2010. FZC/LLC.
@@ -914,6 +926,8 @@ IFRS compliant, ISA audited by Prudential Auditing. Banker: Emirates NBD.
 VAT: 5%. Corp Tax: 9% on >AED 375K (from Jan 2024). AED pegged to USD at 3.6725.
 Memberships: IIMS, RINA, IMarEST, Marine Valuators, Average Adjusters Association.
 Associates: TMN Surveys, Creative Marine India.
+Services: Risk Assessment Audits, Vessel Inspection, Cargo Inspection, Damage Investigation, Ship Management, Ship Assistance, Yacht Inspections, Marine Consultation/Claims.
+Clients: Shipping companies, cargo operators, insurance firms, P&I clubs, banks, brokers, lawyers.
 
 ## SHAREHOLDERS (31 Dec 2024)
 Uday Moorthi: Managing Partner 50% (AED 500K). Anita Moorthi: 25%. Rohan Moorthi: 25%.
@@ -923,8 +937,8 @@ Capital: AED 1,000,000. Prior to Oct 2023: Shuraa Trading held 51%.
 Historical: 12(2022)→14(2023)→18(2024)→16(2025)
 Leadership: Uday Moorthi (MD), Anita Moorthi (Managing Partner — Accounts/HR), Riddhi Moorthi (Finance Manager), Rohan Moorthi (Commercial Manager — BD/PR)
 Senior: Joel Lloyd Pinheiro (GM — MWS/casualty/yacht/claims), Karun Sharma (Projects & Engineering — new builds/repairs/specs), Ryan D'souza (Surveyor — valuations/JH2013/warranty)
-Surveyors: Divakar Bangera (Cargo & Admin — bulk/draft/ISO), Ahamed Yazar (Cargo), Capt. Aswin Vijay (H&M/P&I/warranty), Aravindan Rangan (H&M/P&I), Kiran Das (Petroleum/chemical/bunker), Vinyas Bangera (Junior), Rahul Amin, Jaya Prakash Mandali, Jamie Jr. Canas (Trainee — yacht)
-Admin: Nina Ricci Del Rosario (Admin Executive), Hussaini Mithaiwala (Financial Analyst)
+Surveyors: Divakar Bangera (Cargo & Admin), Ahamed Yazar (Cargo), Capt. Aswin Vijay (H&M/P&I), Aravindan Rangan (H&M/P&I), Kiran Das (Petroleum/chemical), Vinyas Bangera (Junior), Rahul Amin, Jaya Prakash Mandali, Jamie Jr. Canas (Trainee — yacht)
+Admin: Nina Ricci Del Rosario, Hussaini Mithaiwala (Financial Analyst)
 
 ## INCOME STATEMENT (AED)
 2019: Rev 4,110,000 | CoR 2,070,000 | GP 2,040,000 | NP 750,000
@@ -933,21 +947,15 @@ Admin: Nina Ricci Del Rosario (Admin Executive), Hussaini Mithaiwala (Financial 
 2022: Rev 5,353,463 | CoR 2,726,221 | GP 2,627,242 | NP 566,573 | Admin 950,021 | Sell 121,645 | Mgmt 960,000
 2023: Rev 5,541,579 | CoR 2,685,526 | GP 2,856,053 | NP 474,862 | Admin 1,148,218 | Sell 59,910 | Mgmt 1,140,000
 2024: Rev 6,539,201 | CoR 3,380,951 | GP 3,158,250 | NP 327,416 | Admin 1,412,945 | Sell 118,336 | Mgmt 1,200,000
-2025*: Rev 7,798,820 | CoR 1,161,596 | GP 6,637,224 | NP 677,573 | Sell 109,324 | Mgmt 1,440,000 (*UNAUDITED, different cost classification)
+2025*: Rev 7,798,820 | CoR 1,161,596 | GP 6,637,224 | NP 677,573 | Sell 109,324 | Mgmt 1,440,000 (*UNAUDITED)
 
 ## DETAILED COSTS (AED, 2022→2023→2024→2025*)
-Salary: 2,240,150→2,454,267→2,882,593→3,337,913
-Mgmt Remuneration (Uday): 960,000→1,140,000→1,200,000→1,440,000
-Sub-contracting: 858,911→644,302→833,482→872,214
-Survey Exp: 36,733→71,723→197,720→289,382
-Admin Payroll: 127,065→218,463→375,971→405,398
-Insurance: 91,216→95,489→112,112→134,002
-Rent: 97,654→105,525→123,262→158,007
-Selling/BDM: 121,645→59,910→118,336→109,324
-Travel: 56,817→58,196→76,832→55,851
-Legal & Prof: 31,366→34,834→29,233→72,913
-Bad Debts: 0→0→63,682→11,010
-Depreciation: 7,849→8,942→9,577→9,577
+Salary: 2,240,150→2,454,267→2,882,593→3,337,913 | Mgmt Remun: 960,000→1,140,000→1,200,000→1,440,000
+Sub-contracting: 858,911→644,302→833,482→872,214 | Survey Exp: 36,733→71,723→197,720→289,382
+Admin Payroll: 127,065→218,463→375,971→405,398 | Insurance: 91,216→95,489→112,112→134,002
+Rent: 97,654→105,525→123,262→158,007 | Selling: 121,645→59,910→118,336→109,324
+Travel: 56,817→58,196→76,832→55,851 | Legal: 31,366→34,834→29,233→72,913
+Bad Debts: 0→0→63,682→11,010 | Depreciation: 7,849→8,942→9,577→9,577
 Total Indirect: 3,891,246→4,350,691→5,180,583→5,959,651
 
 ## BALANCE SHEET (AED)
@@ -956,70 +964,39 @@ Total Indirect: 3,891,246→4,350,691→5,180,583→5,959,651
 2024: Assets 3,052,162 | PP&E 27,019 | Rec(net) 2,158,771 | Cash 596,391 | CA 3,006,860 | SHF 2,280,401 | Gratuity 455,772 | Payables 315,989 | Liab 771,761
 
 ## CASH FLOW (AED)
-2022: OpCF 655,993 | CapEx (17,270) | Net (32,546)
-2023: OpCF 264,411 | CapEx 0 | Net 264,512
-2024: OpCF **(319)** | CapEx (12,936) | Net (13,255) — collapsed due to receivables +454K
+2022: OpCF 655,993 | CapEx (17,270) | Net (32,546) | 2023: OpCF 264,411 | Net 264,512 | 2024: OpCF (319) | CapEx (12,936) | Net (13,255)
 
 ## MONTHLY REVENUE (AED)
 2025*: Jan 638,023 | Feb 704,572 | Mar 651,531 | Apr 447,880 | May 592,709 | Jun 611,005 | Jul 609,264 | Aug 853,502 | Sep 522,083 | Oct 781,106 | Nov 518,859 | Dec 868,285 | Total 7,798,820
 2024: Jan 432,204 | Feb 488,038 | Mar 515,089 | Apr 414,946 | May 647,861 | Jun 428,269 | Jul 650,950 | Aug 445,063 | Sep 665,302 | Oct 546,460 | Nov 632,464 | Dec 672,556 | Total 6,539,201
 
 ## GEOGRAPHIC REVENUE (AED)
-2024: UK 2,294,245(35%) | UAE 2,048,127(31%) | Singapore 721,351(11%) | Germany 387,098(6%) | Monaco 251,026(4%) | Netherlands 176,417(3%) | Italy 120,941(2%) | USA 113,798(2%) | Other 426,198(6%)
-2023: UAE 1,826,029(33%) | UK 2,099,671(38%) | Singapore 456,882(8%) | Germany 115,207(2%) | Netherlands 302,374(5%) | Monaco 319,327(6%)
-2022: UAE 1,683,540(31%) | UK 2,444,572(46%) | Singapore 342,400(6%)
+2024: UK 2,294,245(35%) | UAE 2,048,127(31%) | Singapore 721,351(11%) | Germany 387,098(6%) | Monaco 251,026(4%) | Netherlands 176,417(3%) | Italy 120,941(2%) | USA 113,798(2%)
+2023: UAE 33% | UK 38% | Singapore 8% | 2022: UAE 31% | UK 46% | Singapore 6%
 
 ## PIPELINE
-2022: 751 enq → 696 jobs → 622 inv → 74 pending (conv 92.7%, inv 89.4%)
-2023: 729 → 651 → 610 → 41 (89.3%, 93.7%)
-2024: 1,025 → 973 → 748 → 225 (94.9%, **76.9%** ⚠️)
-2025*: 1,252 → 1,136 → 1,013 → 123 (90.7%, 89.2%)
+2022: 751→696→622 (74 pend, 92.7%) | 2023: 729→651→610 (41, 89.3%) | 2024: 1,025→973→748 (225!, 94.9%, inv 76.9%) | 2025*: 1,252→1,136→1,013 (123, 90.7%)
 
-## JOBS BY TYPE (2022→2023→2024→2025*)
-Hull & P&I Damage: 102→105→204→413 (4x growth, now dominant)
-Cargo Damage: 363→326→509→197 (sharp 61% decline in 2025)
-Risk Assessment: 56→61→64→92
-P&I Condition: 39→36→45→48
-Yacht: 21→36→59→42
-Desktop Survey: 26→18→23→68 (growing)
+## JOBS BY TYPE (2022→2025*): Hull&P&I: 102→413(4x!) | Cargo: 363→197(▼61%) | Risk: 56→92 | Desktop: 26→68
 
-## RECEIVABLES AGEING (AED)
-2024: <3m 1,134,245 | 3-6m 489,978 | 6-12m 359,427 | >12m 175,120 | Gross 2,333,891 | ECL (175,120) | Net 2,158,771
-Currency 2024: GBP 1,132,901(48.5%) | AED 625,070(26.8%) | SGD 317,363(13.6%)
+## RECEIVABLES 2024: <3m 1,134,245 | 3-6m 489,978 | 6-12m 359,427 | >12m 175,120 | ECL (175,120) | Currency: GBP 48.5%, AED 26.8%, SGD 13.6%
 
-## KEY RATIOS
-GM%: 49.1(22)→51.5(23)→48.3(24)→85.1*(25) (*not comparable)
-NM%: 10.6→8.6→5.0→8.7*
-Rev/Emp: 446,122→395,827→363,289→487,426*
-Profit/Emp: 47,214→33,919→18,190→42,348*
-DSO: 127→112→120
-CR: 3.79x→9.69x→9.52x
-ROE: 38.3%→24.3%→14.4%
-ROA: 22.9%→18.2%→10.7%
-Avg Fee/Job: 7,692→8,512→6,721→6,866*
-EBITDA: 574,422(22)→483,804(23)→336,993(24)
+## KEY RATIOS: NM%: 10.6(22)→8.6(23)→5.0(24)→8.7*(25) | Rev/Emp: 446K→396K→363K→487K* | DSO: 127→112→120 | CR: 3.79x→9.69x→9.52x | ROE: 38.3→24.3→14.4 | ROA: 22.9→18.2→10.7 | AvgFee: 7,692→8,512→6,721→6,866* | EBITDA: 574K(22)→484K(23)→337K(24)
 
-## DIVIDENDS (AED)
-2022: 2,000,000 (exceeded NP!) | 2023: 800,000 | 2024: 0
-Retained Earnings: 982,339(22)→609,715(23)→904,389(24)
+## DIVIDENDS: 2M(22)→800K(23)→0(24) | RE: 982K→610K→904K
+## MGMT REMUN: 960K(22)→1.14M(23)→1.2M(24)→1.44M(25*) [18-20% of rev, 170-367% of NP]
 
-## MGMT REMUNERATION (to Uday Moorthi)
-960K(22,17.9%rev,169.5%NP) → 1.14M(23,20.6%,240.1%) → 1.2M(24,18.4%,**366.5%**) → 1.44M(25*,18.5%,212.5%)
-
-## SERVICES (from quest-marine.com)
-Risk Assessment Audits, Vessel Inspection, Cargo Inspection, Damage Investigation, Ship Management, Ship Assistance, Yacht Inspections, Marine Consultation/Claims
-
-## RULES
-1. ONLY use data above. NEVER fabricate.
-2. 2025 = ⚠️ UNAUDITED. 2025 GM not comparable.
-3. Rev/Employee = PRIMARY efficiency metric.
-4. Flag: margin compression, DSO>90, cost>revenue growth.
-5. Job model: Jobs × Avg Fee = Revenue.
-6. DuPont/Z-Score: limited for asset-light firms — flag.
-7. Mgmt remuneration: factual, no judgment.
-8. Benchmark: ABL Group, Constellation Marine, Matthew Daniel — NOT large logistics.
-9. Concise, data-driven. Cite AED figures. Suggest next steps.
-10. If data not available, say so. Never guess.`;
+═══ RESPONSE RULES ═══
+1. For QM questions: cite exact AED figures, flag 2025 as ⚠️ unaudited, note 2025 GM not comparable
+2. For general questions: be a knowledgeable financial analyst — explain concepts clearly, give industry context
+3. For combined questions: blend QM data with industry knowledge
+4. Rev/Employee = primary efficiency metric for service firms
+5. DuPont/Z-Score: limited for asset-light firms — always flag
+6. Benchmark peers: ABL Group, Constellation Marine, Matthew Daniel
+7. Always suggest actionable next steps for QM questions
+8. Be concise but thorough. Use tables and bullet points.
+9. You can discuss: finance theory, valuation, marine industry, UAE business, strategy, economics, careers, and any other topic
+10. If asked about current events or real-time data you don't have, say so honestly and suggest where to look`;
 
 const chatHistory = [];
 
@@ -1067,8 +1044,17 @@ async function sendChat(overrideText) {
     if (!resp.ok) throw new Error('API ' + resp.status);
 
     const data = await resp.json();
-    const reply = (data.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n')
-      || buildAnswer(text); // fallback to local
+    
+    // Extract text from all content blocks (handles web search tool results)
+    let reply = '';
+    if (data.content && Array.isArray(data.content)) {
+      for (const block of data.content) {
+        if (block.type === 'text' && block.text) {
+          reply += block.text + '\n';
+        }
+      }
+    }
+    reply = reply.trim() || buildAnswer(text);
 
     addChatMsg('assistant', reply);
     chatHistory.push({ role: 'assistant', content: reply });
