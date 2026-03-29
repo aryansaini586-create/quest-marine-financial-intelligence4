@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -24,13 +24,7 @@ export default async function handler(req, res) {
         max_tokens: 2048,
         system: system,
         messages: messages,
-        tools: [
-          {
-            type: "web_search_20250305",
-            name: "web_search",
-            max_uses: 3,
-          }
-        ],
+        tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 3 }],
       }),
     });
 
@@ -40,4 +34,4 @@ export default async function handler(req, res) {
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
-}
+};
