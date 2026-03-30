@@ -3,1566 +3,279 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quest Marine LLC — Financial Intelligence System</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Quest Marine LLC — Financial Intelligence Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --navy: #003366;
-  --navy-dark: #0A1628;
-  --navy-mid: #0D2137;
-  --teal: #007B8A;
-  --teal-light: #E0F4F4;
-  --gold: #D4A843;
-  --gold-light: #FFF8E7;
-  --white: #FFFFFF;
-  --grey-50: #F8FAFC;
-  --grey-100: #F1F5F9;
-  --grey-200: #E2E8F0;
-  --grey-300: #CBD5E1;
-  --grey-400: #94A3B8;
-  --grey-500: #64748B;
-  --grey-600: #475569;
-  --grey-700: #334155;
-  --red: #DC2626;
-  --green: #16A34A;
-  --orange: #EA580C;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  background: var(--grey-100);
-  color: var(--navy-dark);
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* ── HEADER ── */
-.header {
-  background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-mid) 100%);
-  padding: 14px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  position: relative;
-  z-index: 10;
-}
-.header::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--gold), var(--teal), var(--gold));
-  opacity: 0.6;
-}
-.header-left { display: flex; align-items: center; gap: 16px; }
-.logo {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--gold), #B8922E);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px; color: var(--navy-dark);
-  box-shadow: 0 2px 12px rgba(212,168,67,0.4);
-  animation: logoGlow 3s ease-in-out infinite alternate;
-}
-@keyframes logoGlow {
-  from { box-shadow: 0 2px 12px rgba(212,168,67,0.3); }
-  to { box-shadow: 0 4px 20px rgba(212,168,67,0.6); }
-}
-.header-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--white); letter-spacing: 0.5px; }
-.header-sub { font-size: 11px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; font-weight: 500; margin-top: 2px; }
-.header-right { color: rgba(255,255,255,0.4); font-size: 11px; text-align: right; line-height: 1.5; }
-
-/* ── TAB BAR ── */
-.tab-bar {
-  background: var(--white);
-  padding: 6px 24px;
-  display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--grey-200);
-}
-.tab-btn {
-  padding: 10px 22px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'DM Sans', sans-serif;
-  background: transparent;
-  color: var(--grey-500);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.tab-btn:hover { background: var(--grey-100); color: var(--navy); }
-.tab-btn.active {
-  background: var(--navy);
-  color: var(--white);
-  box-shadow: 0 2px 8px rgba(0,51,102,0.3);
-}
-
-/* ── CONTENT AREA ── */
-.content { flex: 1; overflow: hidden; position: relative; }
-.tab-panel { display: none; height: 100%; overflow-y: auto; }
-.tab-panel.active { display: flex; flex-direction: column; }
-
-/* ── CHAT TAB ── */
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.msg {
-  max-width: 82%;
-  padding: 14px 18px;
-  border-radius: 14px;
-  font-size: 13.5px;
-  line-height: 1.7;
-  animation: msgIn 0.3s ease-out;
-}
-@keyframes msgIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.msg.user {
-  align-self: flex-end;
-  background: var(--navy);
-  color: var(--white);
-  border-bottom-right-radius: 4px;
-}
-.msg.assistant {
-  align-self: flex-start;
-  background: var(--white);
-  color: var(--navy-dark);
-  border: 1px solid var(--grey-200);
-  border-bottom-left-radius: 4px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
-}
-.msg-label {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--teal);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 6px;
-}
-.msg strong { color: var(--navy); }
-.msg code {
-  background: var(--grey-100);
-  padding: 1px 5px;
-  border-radius: 3px;
-  font-size: 12px;
-  font-family: 'DM Mono', monospace;
-}
-
-.suggested-area {
-  padding: 0 24px 14px;
-}
-.pillar-label {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--teal);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 6px;
-  margin-top: 12px;
-}
-.suggested-btns { display: flex; flex-wrap: wrap; gap: 6px; }
-.suggested-btn {
-  padding: 7px 14px;
-  font-size: 12px;
-  font-family: 'DM Sans', sans-serif;
-  background: var(--white);
-  color: var(--navy);
-  border: 1px solid var(--grey-200);
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.15s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-}
-.suggested-btn:hover {
-  background: var(--teal-light);
-  border-color: var(--teal);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(0,123,138,0.12);
-}
-
-.chat-input-bar {
-  padding: 14px 24px;
-  border-top: 1px solid var(--grey-200);
-  display: flex;
-  gap: 10px;
-  background: var(--white);
-}
-.chat-input {
-  flex: 1;
-  padding: 11px 16px;
-  border-radius: 10px;
-  border: 1.5px solid var(--grey-300);
-  font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.chat-input:focus { border-color: var(--teal); }
-.chat-input:disabled { opacity: 0.5; }
-.send-btn {
-  padding: 11px 24px;
-  background: var(--navy);
-  color: var(--white);
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.send-btn:hover { background: var(--teal); }
-.send-btn:disabled { background: var(--grey-400); cursor: not-allowed; }
-
-.typing-dots {
-  display: flex;
-  gap: 5px;
-  align-items: center;
-}
-.typing-dots span {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--teal);
-  animation: dotPulse 1.2s ease-in-out infinite;
-}
-.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes dotPulse {
-  0%, 100% { opacity: 0.25; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.15); }
-}
-
-/* ── DASHBOARD ── */
-.dash-content { padding: 24px; }
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
-  gap: 14px;
-  margin-bottom: 28px;
-}
-.kpi-card {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 18px 20px;
-  border-left: 4px solid var(--teal);
-  box-shadow: 0 2px 12px rgba(0,51,102,0.06);
-  position: relative;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,51,102,0.1); }
-.kpi-card.warning { border-left-color: var(--orange); }
-.kpi-label { font-size: 11px; color: var(--grey-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-.kpi-value { font-size: 26px; font-weight: 800; color: var(--navy); margin-top: 4px; font-family: 'DM Serif Display', serif; }
-.kpi-sub { font-size: 11px; color: var(--grey-400); margin-top: 2px; }
-.kpi-trend { font-size: 11.5px; font-weight: 700; margin-top: 4px; }
-.kpi-trend.up { color: var(--green); }
-.kpi-trend.down { color: var(--red); }
-.kpi-warn { position: absolute; top: 8px; right: 10px; font-size: 14px; }
-
-.charts-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  margin-bottom: 20px;
-}
-.chart-card {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 22px;
-  box-shadow: 0 2px 12px rgba(0,51,102,0.05);
-}
-.chart-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 14px;
-  font-family: 'DM Serif Display', serif;
-}
-.chart-container { position: relative; height: 250px; }
-
-/* ── SCENARIOS ── */
-.scenario-content { padding: 24px; }
-.scenario-card {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 26px;
-  box-shadow: 0 2px 12px rgba(0,51,102,0.05);
-  margin-bottom: 20px;
-}
-.scenario-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 18px;
-  font-family: 'DM Serif Display', serif;
-}
-.slider-group { margin-bottom: 14px; }
-.slider-label { font-size: 12px; font-weight: 600; color: var(--grey-600); margin-bottom: 4px; }
-.slider {
-  width: 100%;
-  accent-color: var(--teal);
-  height: 6px;
-  cursor: pointer;
-}
-.proj-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 16px;
-}
-.proj-box {
-  border-radius: 10px;
-  padding: 16px;
-  text-align: center;
-}
-.proj-box-label { font-size: 11px; color: var(--grey-500); font-weight: 600; }
-.proj-box-value { font-size: 22px; font-weight: 800; margin-top: 4px; }
-
-/* ── DATA TABLES ── */
-.data-content { padding: 24px; }
-.table-tabs { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
-.table-tab {
-  padding: 7px 16px;
-  font-size: 11.5px;
-  font-weight: 600;
-  font-family: 'DM Sans', sans-serif;
-  background: var(--grey-100);
-  color: var(--grey-600);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.table-tab:hover { background: var(--grey-200); }
-.table-tab.active { background: var(--teal); color: var(--white); }
-.table-wrap {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 12px rgba(0,51,102,0.05);
-  overflow-x: auto;
-}
-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-th {
-  text-align: left;
-  padding: 10px 12px;
-  border-bottom: 2px solid var(--navy);
-  color: var(--navy);
-  font-weight: 700;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-}
-th.right { text-align: right; }
-td {
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--grey-200);
-  white-space: nowrap;
-}
-td.right { text-align: right; font-variant-numeric: tabular-nums; }
-td.red { color: var(--red); }
-td.bold { font-weight: 700; }
-tr.bold-row { font-weight: 700; background: rgba(0,51,102,0.03); }
-
-/* ── FOOTER ── */
-.footer {
-  background: var(--navy-dark);
-  padding: 8px 28px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 10px;
-  color: rgba(255,255,255,0.3);
-}
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--grey-300); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--grey-400); }
-
-@media (max-width: 768px) {
-  .charts-grid { grid-template-columns: 1fr; }
-  .kpi-grid { grid-template-columns: 1fr 1fr; }
-  .proj-grid { grid-template-columns: 1fr; }
-}
+:root{--qm-navy:#0A2540;--qm-gold:#D4A843;--qm-teal:#0F6E56;--qm-coral:#D85A30;--qm-blue:#378ADD;--qm-pink:#D4537E;--qm-purple:#534AB7;--bg-primary:#fff;--bg-secondary:#f5f5f0;--bg-tertiary:#eeeee8;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;--text-tertiary:#999;--border:rgba(0,0,0,.1);--radius-md:8px;--radius-lg:12px}
+@media(prefers-color-scheme:dark){:root{--bg-primary:#1a1a1a;--bg-secondary:#242424;--bg-tertiary:#2e2e2e;--text-primary:#e8e8e8;--text-secondary:#a0a0a0;--text-tertiary:#707070;--border:rgba(255,255,255,.1)}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-tertiary);color:var(--text-primary);min-height:100vh}
+.dash{max-width:880px;margin:0 auto;padding:24px 16px}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem}
+.anchor{width:44px;height:44px;border-radius:var(--radius-md);background:var(--qm-navy);display:flex;align-items:center;justify-content:center;color:#D4A843;font-size:22px;font-weight:500;font-family:'Playfair Display',serif}
+.brand{font-family:'Playfair Display',serif;font-size:20px;font-weight:500}
+.sub{font-size:11px;color:var(--qm-gold);letter-spacing:1.5px;text-transform:uppercase;font-weight:500;margin-top:2px}
+.tab-bar{display:flex;gap:4px;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:var(--radius-md);font-size:13px;font-weight:500;cursor:pointer;border:.5px solid var(--border);background:var(--bg-primary);color:var(--text-secondary);transition:all .2s;user-select:none}
+.tab:hover{background:var(--bg-secondary)}
+.tab.active{background:var(--qm-navy);color:#fff;border-color:var(--qm-navy)}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.kpi{background:var(--bg-secondary);border-radius:var(--radius-md);padding:12px 14px}
+.kpi-label{font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kpi-val{font-size:22px;font-weight:500}
+.kpi-delta{font-size:11px;font-weight:500;margin-top:2px}
+.up{color:var(--qm-teal)}.down{color:var(--qm-coral)}
+.chart-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:1.5rem}
+.chart-card{background:var(--bg-primary);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px}
+.chart-title{font-size:13px;font-weight:500;margin-bottom:12px}
+.chart-wrap{position:relative;width:100%}
+.section{display:none}.section.active{display:block}
+.ratio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px}
+.ratio-card{background:var(--bg-secondary);border-radius:var(--radius-md);padding:12px}
+.ratio-name{font-size:12px;color:var(--text-secondary);margin-bottom:6px}
+.ratio-vals{display:flex;gap:8px;font-size:13px;font-weight:500}
+.ratio-yr{text-align:center;flex:1}
+.ratio-yr span{display:block;font-size:10px;color:var(--text-tertiary);font-weight:400;margin-top:2px}
+.slider-row{display:flex;align-items:center;gap:12px;margin:10px 0;font-size:13px;color:var(--text-secondary)}
+.slider-row input[type=range]{flex:1;accent-color:var(--qm-navy)}
+.slider-row .val{min-width:48px;text-align:right;font-weight:500;color:var(--text-primary)}
+.scenario-result{background:var(--bg-secondary);border-radius:var(--radius-md);padding:16px;margin-top:14px}
+.scenario-result h4{font-size:13px;font-weight:500;margin-bottom:10px}
+.sc-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:.5px solid var(--border);color:var(--text-secondary)}
+.sc-row:last-child{border:none}
+.chat-section{background:var(--bg-primary);border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem}
+.chat-header{background:linear-gradient(135deg,#0A2540,#143F6B,#1a5276);padding:18px 20px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.chat-dot{width:10px;height:10px;border-radius:50%;background:#4ADE80;animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+.chat-header-text{flex:1}.chat-header-text strong{font-size:14px;display:block}.chat-header-text span{font-size:11px;opacity:.65}
+.mode-toggle{display:flex;gap:0;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.2)}
+.mode-btn{padding:6px 14px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.6);font-family:inherit;transition:all .2s}
+.mode-btn.active{background:rgba(255,255,255,.2);color:#fff}
+.chat-messages{height:360px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+.chat-messages::-webkit-scrollbar{width:4px}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.6;word-wrap:break-word;white-space:pre-wrap}
+.msg.bot{background:var(--bg-secondary);color:var(--text-primary);align-self:flex-start;border-bottom-left-radius:4px}
+.msg.user{background:var(--qm-navy);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.msg.typing{color:var(--text-tertiary);font-style:italic}
+.chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px}
+.chat-sug{font-size:11px;padding:5px 10px;border-radius:20px;border:.5px solid var(--border);color:var(--text-secondary);cursor:pointer;background:var(--bg-secondary);transition:all .15s}
+.chat-sug:hover{background:var(--qm-navy);color:#fff;border-color:var(--qm-navy)}
+.chat-input-row{display:flex;gap:8px;padding:12px 16px;border-top:.5px solid var(--border);background:var(--bg-secondary)}
+.chat-input-row input{flex:1;padding:10px 14px;border-radius:var(--radius-md);border:.5px solid var(--border);background:var(--bg-primary);color:var(--text-primary);font-size:13px;font-family:inherit;outline:none}
+.chat-input-row input:focus{border-color:var(--qm-navy)}
+.chat-input-row input::placeholder{color:var(--text-tertiary)}
+.chat-send{padding:10px 18px;border-radius:var(--radius-md);border:none;background:var(--qm-navy);color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.chat-send:hover{opacity:.85}
+.chat-send:disabled{opacity:.4;cursor:not-allowed}
+.voice-panel{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:360px;gap:20px;padding:30px 20px;text-align:center}
+.voice-panel.active{display:flex}
+.voice-info{font-size:14px;font-weight:500;color:var(--text-primary);margin-bottom:4px}
+.voice-sub{font-size:12px;color:var(--text-secondary);max-width:400px;line-height:1.6}
+.voice-arrow{font-size:40px;color:var(--qm-gold);margin-top:10px;animation:bounce 1.5s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+.voice-steps{text-align:left;background:var(--bg-secondary);border-radius:var(--radius-md);padding:16px 20px;max-width:420px;width:100%;margin-top:8px}
+.voice-steps p{font-size:12px;color:var(--text-secondary);margin-bottom:6px;line-height:1.5}
+.voice-steps p strong{color:var(--text-primary)}
+.footer{text-align:center;margin-top:2rem;padding-top:1rem;border-top:.5px solid var(--border);font-size:11px;color:var(--text-tertiary);padding-bottom:20px}
+.footer span{color:var(--qm-gold)}
 </style>
 </head>
 <body>
+<div class="dash">
+  <div class="header">
+    <div class="anchor">Q</div>
+    <div><div class="brand">Quest Marine LLC</div><div class="sub">Financial intelligence dashboard</div></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('ai',this)">AI Analyst</div>
+    <div class="tab" onclick="switchTab('overview',this)">Overview</div>
+    <div class="tab" onclick="switchTab('profitability',this)">Profitability</div>
+    <div class="tab" onclick="switchTab('efficiency',this)">Efficiency</div>
+    <div class="tab" onclick="switchTab('ratios',this)">Ratios</div>
+    <div class="tab" onclick="switchTab('scenarios',this)">Scenarios</div>
+  </div>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-left">
-    <div class="logo">⚓</div>
-    <div>
-      <div class="header-title">QUEST MARINE LLC</div>
-      <div class="header-sub">AI Financial Intelligence · Live Search · Powered by Claude</div>
+  <!-- AI ANALYST -->
+  <div id="sec-ai" class="section active">
+    <div class="chat-section">
+      <div class="chat-header">
+        <div class="chat-dot"></div>
+        <div class="chat-header-text">
+          <strong>Quest Marine AI Financial Analyst</strong>
+          <span>7 years of financial data (2019-2025) · Audited statements</span>
+        </div>
+        <div class="mode-toggle">
+          <button class="mode-btn active" id="mode-text" onclick="setMode('text')">Text Chat</button>
+          <button class="mode-btn" id="mode-voice" onclick="setMode('voice')">Voice Agent</button>
+        </div>
+      </div>
+      <div id="text-panel">
+        <div class="chat-messages" id="chat-messages">
+          <div class="msg bot">Welcome to the Quest Marine Financial Intelligence System. I have complete access to QM's financial data from 2019 through 2025.
+
+Ask me anything — revenue trends, profitability, ratios, balance sheet, pipeline, geographic split, employee efficiency, or forward budget scenarios.
+
+Type below or click a suggested question to get started.</div>
+        </div>
+        <div class="chat-suggestions" id="chat-suggestions">
+          <div class="chat-sug" onclick="askQ('What is the revenue trend from 2019 to 2025?')">Revenue trend</div>
+          <div class="chat-sug" onclick="askQ('Why is net profit declining despite revenue growth?')">Profit decline</div>
+          <div class="chat-sug" onclick="askQ('Explain the revenue per employee trend and why it matters')">Rev/employee</div>
+          <div class="chat-sug" onclick="askQ('What does the Altman Z-Score tell us about QM financial health?')">Altman Z-Score</div>
+          <div class="chat-sug" onclick="askQ('Break down the full cost structure')">Cost structure</div>
+          <div class="chat-sug" onclick="askQ('What is the DSO and why is it a risk?')">DSO risk</div>
+          <div class="chat-sug" onclick="askQ('Geographic revenue breakdown and growth markets')">Geography</div>
+          <div class="chat-sug" onclick="askQ('DuPont analysis and its limitations for QM')">DuPont analysis</div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Ask about Quest Marine financials..." onkeydown="if(event.key==='Enter')sendMsg()">
+          <button class="chat-send" id="send-btn" onclick="sendMsg()">Send</button>
+        </div>
+      </div>
+      <div class="voice-panel" id="voice-panel">
+        <div class="voice-info">ElevenLabs Voice Agent</div>
+        <div class="voice-sub">The voice analyst widget is the floating button in the <strong>bottom-right corner</strong> of this page. Click it to start a voice conversation about Quest Marine financials.</div>
+        <div class="voice-arrow">&#8600;</div>
+        <div class="voice-steps">
+          <p><strong>Step 1:</strong> Click the floating orb button (bottom-right corner)</p>
+          <p><strong>Step 2:</strong> Allow microphone access when prompted</p>
+          <p><strong>Step 3:</strong> Speak naturally — ask about revenue, margins, ratios, etc.</p>
+          <p><strong>Step 4:</strong> The AI responds with Brian's deep voice using real QM data</p>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="header-right">
-    <div>Data: 2019–2025 · Audited through 2024</div>
-    <div style="margin-top:2px;font-size:10px;color:rgba(255,255,255,0.5)">Powered by Google Gemini AI</div>
+
+  <!-- OVERVIEW -->
+  <div id="sec-overview" class="section">
+    <div class="kpi-grid" id="kpi-area"></div>
+    <div class="chart-row">
+      <div class="chart-card"><div class="chart-title">Revenue and net profit trend (AED millions)</div><div class="chart-wrap" style="height:260px"><canvas id="revChart"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Pipeline: enquiries vs jobs completed</div><div class="chart-wrap" style="height:260px"><canvas id="pipeChart"></canvas></div></div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-card"><div class="chart-title">Geographic revenue split (2024)</div><div class="chart-wrap" style="height:240px"><canvas id="geoChart"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Service mix (jobs by type, 2025)</div><div class="chart-wrap" style="height:240px"><canvas id="serviceChart"></canvas></div></div>
+    </div>
   </div>
+
+  <!-- PROFITABILITY -->
+  <div id="sec-profitability" class="section">
+    <div class="chart-row">
+      <div class="chart-card"><div class="chart-title">Margin compression: gross vs net margin (%)</div><div class="chart-wrap" style="height:280px"><canvas id="marginChart"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Cost structure breakdown (2024, AED)</div><div class="chart-wrap" style="height:280px"><canvas id="costChart"></canvas></div></div>
+    </div>
+    <div class="chart-card" style="margin-bottom:1rem"><div class="chart-title">Management remuneration vs net profit (AED)</div><div class="chart-wrap" style="height:260px"><canvas id="mgmtChart"></canvas></div></div>
+  </div>
+
+  <!-- EFFICIENCY -->
+  <div id="sec-efficiency" class="section">
+    <div class="chart-row">
+      <div class="chart-card"><div class="chart-title">Revenue per employee (AED thousands)</div><div class="chart-wrap" style="height:260px"><canvas id="rpeChart"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Headcount vs jobs completed</div><div class="chart-wrap" style="height:260px"><canvas id="hcChart"></canvas></div></div>
+    </div>
+    <div class="chart-card"><div class="chart-title">Average fee per job (AED)</div><div class="chart-wrap" style="height:240px"><canvas id="feeChart"></canvas></div></div>
+  </div>
+
+  <!-- RATIOS -->
+  <div id="sec-ratios" class="section"><div class="ratio-grid" id="ratio-area"></div></div>
+
+  <!-- SCENARIOS -->
+  <div id="sec-scenarios" class="section">
+    <div class="chart-card">
+      <div class="chart-title">Forward budget scenario modeller (base: 2025 unaudited)</div>
+      <div class="slider-row"><span style="min-width:160px">Revenue growth</span><input type="range" min="-10" max="30" value="15" step="1" id="sl-rev" oninput="runScenario()"><span class="val" id="v-rev">15%</span></div>
+      <div class="slider-row"><span style="min-width:160px">Staff cost change</span><input type="range" min="-10" max="25" value="10" step="1" id="sl-staff" oninput="runScenario()"><span class="val" id="v-staff">10%</span></div>
+      <div class="slider-row"><span style="min-width:160px">Mgmt remuneration</span><input type="range" min="-10" max="30" value="10" step="1" id="sl-mgmt" oninput="runScenario()"><span class="val" id="v-mgmt">10%</span></div>
+      <div class="slider-row"><span style="min-width:160px">Sub-contracting</span><input type="range" min="-20" max="30" value="5" step="1" id="sl-sub" oninput="runScenario()"><span class="val" id="v-sub">5%</span></div>
+      <div class="scenario-result" id="scenario-out"></div>
+    </div>
+  </div>
+
+  <div class="footer">Quest Marine LLC — GIP III Deliverable · <span>SP Jain MGB 2026</span><br>Data: audited financial statements 2019-2024 · 2025 unaudited management accounts<br>Text AI: Google Gemini · Voice AI: ElevenLabs · Dashboard by Aryan</div>
 </div>
 
-<!-- TAB BAR -->
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('chat')" id="tab-chat">💬 Chat</button>
-  <button class="tab-btn" onclick="switchTab('dashboard')" id="tab-dashboard">📊 Dashboard</button>
-  <button class="tab-btn" onclick="switchTab('scenarios')" id="tab-scenarios">📐 Scenarios</button>
-  <button class="tab-btn" onclick="switchTab('data')" id="tab-data">📋 Data Tables</button>
-</div>
+<!-- ============================================================ -->
+<!-- ELEVENLABS VOICE AGENT WIDGET (floating bottom-right button) -->
+<!-- ============================================================ -->
+<elevenlabs-convai agent-id="agent_3701kmzrfdaje629p0vgq8zf6nxa" avatar-orb-color-1="#D4A843" avatar-orb-color-2="#0A2540" action-text="Voice Analyst" start-call-text="Start voice call" end-call-text="End call" listening-text="Listening..." speaking-text="Analyst speaking..."></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-<!-- CONTENT -->
-<div class="content">
-
-  <!-- ═══ CHAT TAB ═══ -->
-  <div class="tab-panel active" id="panel-chat">
-    <div class="chat-messages" id="chatMessages">
-      <div class="msg assistant">
-        <div class="msg-label">⚓ QM Financial Intelligence</div>
-        <div>Welcome to Quest Marine's <strong>AI-Powered</strong> Financial Intelligence System.<br>I have access to <strong>all verified financial data from 2019–2025</strong> and can answer <strong>any question</strong> — QM financials, marine industry, finance concepts, and more.<br><br>
-        • <strong>QM Financials</strong> — revenue, profit, costs, ratios, balance sheet, cash flow, pipeline, projections<br>
-        • <strong>Industry & Strategy</strong> — marine market trends, competitor analysis, growth strategies<br>
-        • <strong>Finance Concepts</strong> — DCF, LBO, WACC, valuation methods, financial modeling<br><br>
-        Just type your question below and hit Send!</div>
-      </div>
-    </div>
-
-    <div class="suggested-area" id="suggestedArea">
-      <div class="pillar-label">📊 QM Financial Analysis</div>
-      <div class="suggested-btns">
-        <button class="suggested-btn" onclick="askSuggested(this)">Give me a complete financial health assessment of QM</button>
-        <button class="suggested-btn" onclick="askSuggested(this)">Why is net profit declining despite revenue growth?</button>
-        <button class="suggested-btn" onclick="askSuggested(this)">Calculate all key ratios with trend analysis</button>
-      </div>
-      <div class="pillar-label">🏢 Industry & Strategy</div>
-      <div class="suggested-btns">
-        <button class="suggested-btn" onclick="askSuggested(this)">What are current trends in the marine survey industry?</button>
-        <button class="suggested-btn" onclick="askSuggested(this)">How should QM position itself for growth in APAC?</button>
-        <button class="suggested-btn" onclick="askSuggested(this)">Analyze the Dubai maritime sector outlook</button>
-      </div>
-      <div class="pillar-label">📐 Finance & Valuation</div>
-      <div class="suggested-btns">
-        <button class="suggested-btn" onclick="askSuggested(this)">What valuation methods would work best for QM?</button>
-        <button class="suggested-btn" onclick="askSuggested(this)">Explain DCF valuation and apply it to QM's cash flows</button>
-      </div>
-    </div>
-
-    <div class="chat-input-bar">
-      <input class="chat-input" id="chatInput" placeholder="Ask about QM's financials — revenue, costs, ratios, projections..." onkeydown="if(event.key==='Enter')sendChat()">
-      <button class="send-btn" id="sendBtn" onclick="sendChat()">Send</button>
-    </div>
-  </div>
-
-  <!-- ═══ DASHBOARD TAB ═══ -->
-  <div class="tab-panel" id="panel-dashboard">
-    <div class="dash-content">
-      <div class="kpi-grid" id="kpiGrid"></div>
-      <div class="charts-grid">
-        <div class="chart-card"><div class="chart-title">Revenue & Net Profit Trend</div><div class="chart-container"><canvas id="chartRevProfit"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Margin Trends (%)</div><div class="chart-container"><canvas id="chartMargins"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Cost Breakdown (2025) ⚠️</div><div class="chart-container"><canvas id="chartCosts"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Revenue/Employee Trend</div><div class="chart-container"><canvas id="chartEmployee"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Monthly Revenue — 2025 vs 2024</div><div class="chart-container"><canvas id="chartMonthly"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Geographic Revenue (2024)</div><div class="chart-container"><canvas id="chartGeo"></canvas></div></div>
-      </div>
-      <div class="charts-grid">
-        <div class="chart-card"><div class="chart-title">Pipeline: Enquiries → Jobs → Invoiced</div><div class="chart-container"><canvas id="chartPipeline"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Receivables Ageing (AED)</div><div class="chart-container"><canvas id="chartReceivables"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Jobs by Service Type (2025 ⚠️)</div><div class="chart-container"><canvas id="chartJobTypes"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Dividend vs Net Profit History</div><div class="chart-container"><canvas id="chartDividends"></canvas></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ SCENARIOS TAB ═══ -->
-  <div class="tab-panel" id="panel-scenarios">
-    <div class="scenario-content">
-      <!-- Row 1: Custom Builder -->
-      <div class="scenario-card">
-        <div class="scenario-title">📐 Custom Scenario Builder — Full P&L Projection</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-          <div>
-            <div class="slider-group"><div class="slider-label">Revenue Growth: <strong id="revGrowthVal">15%</strong></div><input type="range" class="slider" min="-20" max="40" value="15" id="revGrowthSlider" oninput="updateScenario()"></div>
-            <div class="slider-group"><div class="slider-label">Cost Growth: <strong id="costGrowthVal">10%</strong></div><input type="range" class="slider" min="-10" max="30" value="10" id="costGrowthSlider" oninput="updateScenario()" style="accent-color:var(--gold)"></div>
-            <div class="slider-group"><div class="slider-label">Staff Count: <strong id="staffVal">16</strong></div><input type="range" class="slider" min="10" max="25" value="16" id="staffSlider" oninput="updateScenario()" style="accent-color:var(--green)"></div>
-            <div class="slider-group"><div class="slider-label">Mgmt Remuneration Growth: <strong id="mgmtGrowthVal">10%</strong></div><input type="range" class="slider" min="-20" max="30" value="10" id="mgmtGrowthSlider" oninput="updateScenario()" style="accent-color:var(--orange)"></div>
-          </div>
-          <div>
-            <div class="proj-grid">
-              <div class="proj-box" style="background:var(--grey-100)"><div class="proj-box-label">Proj. Revenue</div><div class="proj-box-value" id="projRev" style="color:var(--navy)">—</div></div>
-              <div class="proj-box" id="projProfitBox"><div class="proj-box-label">Proj. Net Profit</div><div class="proj-box-value" id="projProfit">—</div></div>
-              <div class="proj-box" style="background:var(--grey-50)"><div class="proj-box-label">Proj. Costs</div><div class="proj-box-value" id="projCosts" style="color:var(--navy);font-size:17px">—</div></div>
-              <div class="proj-box" style="background:var(--grey-50)"><div class="proj-box-label">Net Margin</div><div class="proj-box-value" id="projMargin" style="font-size:17px">—</div></div>
-            </div>
-            <!-- Projected Ratios -->
-            <div style="margin-top:12px;background:var(--grey-50);border-radius:10px;padding:14px;">
-              <div style="font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;margin-bottom:8px">Projected Ratios (2026E)</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:11px;">
-                <div><span style="color:var(--grey-500)">Rev/Emp:</span> <strong id="projRevEmp">—</strong></div>
-                <div><span style="color:var(--grey-500)">Profit/Emp:</span> <strong id="projProfEmp">—</strong></div>
-                <div><span style="color:var(--grey-500)">ROE:</span> <strong id="projROE">—</strong></div>
-                <div><span style="color:var(--grey-500)">ROA:</span> <strong id="projROA">—</strong></div>
-                <div><span style="color:var(--grey-500)">Gross Margin:</span> <strong id="projGM">—</strong></div>
-                <div><span style="color:var(--grey-500)">Mgmt/Rev:</span> <strong id="projMgmtRev">—</strong></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 2: Job Model + Scenarios -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
-        <div class="scenario-card">
-          <div class="scenario-title">🔧 Job-Based Revenue Model</div>
-          <div class="slider-group"><div class="slider-label">Number of Jobs: <strong id="jobCountVal">1200</strong></div><input type="range" class="slider" min="500" max="2000" value="1200" id="jobCountSlider" oninput="updateJobModel()"></div>
-          <div class="slider-group"><div class="slider-label">Avg Fee/Job (AED): <strong id="avgFeeVal">7,200</strong></div><input type="range" class="slider" min="4000" max="12000" step="100" value="7200" id="avgFeeSlider" oninput="updateJobModel()" style="accent-color:var(--gold)"></div>
-          <div style="background:var(--teal-light);border-radius:10px;padding:18px;text-align:center;margin-top:14px;">
-            <div style="font-size:12px;color:var(--teal);font-weight:600" id="jobFormula">1200 × AED 7,200</div>
-            <div style="font-size:30px;font-weight:800;color:var(--navy);margin-top:4px;font-family:'DM Serif Display',serif" id="jobRevenue">AED 8,640,000</div>
-            <div style="font-size:12px;color:var(--grey-500);margin-top:4px" id="jobVs">vs 2025: AED 7.8M (+10.8%)</div>
-          </div>
-        </div>
-        <div class="scenario-card">
-          <div class="chart-title">📊 Pre-Set Scenario Comparison</div>
-          <div class="chart-container"><canvas id="chartScenarios"></canvas></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:10px" id="scenarioLabels"></div>
-        </div>
-      </div>
-
-      <!-- Row 3: Break-Even + Sensitivity -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
-        <div class="scenario-card">
-          <div class="scenario-title">🎯 Break-Even & Target Analysis</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div style="background:var(--grey-50);border-radius:8px;padding:14px;text-align:center;">
-              <div style="font-size:11px;color:var(--grey-500);font-weight:600">Break-Even Revenue</div>
-              <div style="font-size:20px;font-weight:800;color:var(--red);margin-top:4px" id="breakEvenRev">—</div>
-              <div style="font-size:10px;color:var(--grey-400);margin-top:2px" id="breakEvenJobs">—</div>
-            </div>
-            <div style="background:var(--grey-50);border-radius:8px;padding:14px;text-align:center;">
-              <div style="font-size:11px;color:var(--grey-500);font-weight:600">For AED 1M Net Profit</div>
-              <div style="font-size:20px;font-weight:800;color:var(--green);margin-top:4px" id="target1MRev">—</div>
-              <div style="font-size:10px;color:var(--grey-400);margin-top:2px" id="target1MJobs">—</div>
-            </div>
-            <div style="background:var(--grey-50);border-radius:8px;padding:14px;text-align:center;">
-              <div style="font-size:11px;color:var(--grey-500);font-weight:600">For AED 2M Net Profit</div>
-              <div style="font-size:20px;font-weight:800;color:var(--teal);margin-top:4px" id="target2MRev">—</div>
-              <div style="font-size:10px;color:var(--grey-400);margin-top:2px" id="target2MJobs">—</div>
-            </div>
-            <div style="background:var(--grey-50);border-radius:8px;padding:14px;text-align:center;">
-              <div style="font-size:11px;color:var(--grey-500);font-weight:600">Margin of Safety</div>
-              <div style="font-size:20px;font-weight:800;color:var(--navy);margin-top:4px" id="marginSafety">—</div>
-              <div style="font-size:10px;color:var(--grey-400);margin-top:2px">Above break-even</div>
-            </div>
-          </div>
-        </div>
-        <div class="scenario-card">
-          <div class="chart-title">📈 Sensitivity: Revenue Growth vs Net Margin</div>
-          <div class="chart-container"><canvas id="chartSensitivity"></canvas></div>
-        </div>
-      </div>
-
-      <!-- Row 4: Cost Scenario + Ratio Projections Chart -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
-        <div class="scenario-card">
-          <div class="chart-title">💰 Cost Sensitivity: Impact on Net Profit</div>
-          <div class="chart-container"><canvas id="chartCostSensitivity"></canvas></div>
-        </div>
-        <div class="scenario-card">
-          <div class="chart-title">📊 Projected Ratio Comparison: 2024 vs 2026E</div>
-          <div class="chart-container"><canvas id="chartRatioCompare"></canvas></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ DATA TABLES TAB ═══ -->
-  <div class="tab-panel" id="panel-data">
-    <div class="data-content">
-      <div class="table-tabs" id="tableTabs"></div>
-      <div class="table-wrap" id="tableWrap"></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-  <span>GIP III Deliverable · SP Jain MGB 2026</span>
-  <span>⚠️ 2025 data is unaudited · All figures in AED</span>
-</div>
-
+<!-- CHART.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ═══════════════════════════════════════════════════════════
-// QUEST MARINE — ALL FINANCIAL DATA (Verified from Audited FS)
-// ═══════════════════════════════════════════════════════════
+// GEMINI AI CHAT
+var GEMINI_KEY='AIzaSyAL1BnTleorZ4Ou560gkJlWtmaFRu0b6Vg';
+var chatHistory=[];
+var QM_PROMPT='You are the Quest Marine Financial Intelligence Analyst. Senior finance professional. Concise, data-driven, professional tone. Use specific AED figures.\n\nCOMPANY: Quest Marine LLC, B2B marine surveying, Dubai UAE. Est 2010. Services: vessel inspections, cargo/H&M/P&I surveys, risk assessments, ship management. Job-based revenue. Pure service, no assets/inventory. Shareholders: Uday Moorthi 50%, Anita 25%, Rohan 25%. 16 employees (12 surveyors, 4 admin). Finance Mgr: Riddhi Moorthi.\n\nINCOME STATEMENT (AED): Revenue: 2019:4,110,000|2020:3,940,000|2021:4,680,000|2022:5,353,463|2023:5,541,579|2024:6,539,201|2025*:7,798,820. Net Profit: 2019:750,000|2020:450,000|2021:680,000|2022:566,573|2023:474,862|2024:327,416|2025*:677,573. COR: 2022:2,726,221|2023:2,685,526|2024:3,380,951. GP: 2022:2,627,242|2023:2,856,053|2024:3,158,250. Subcontracting: 2022:858,911|2023:644,302|2024:833,482|2025:872,214. Survey expenses: 2022:36,733|2023:71,723|2024:197,720|2025:289,382. Mgmt Remuneration: 2022:960,000|2023:1,140,000|2024:1,200,000|2025:1,440,000. Selling: 2022:121,645|2023:59,910|2024:118,336|2025:109,324. EBITDA: 2023:502,877|2024:359,007.\n\nMARGINS: Gross: 2022:49%|2023:52%|2024:48%. Net: 2019:18.2%|2020:11.4%|2021:14.5%|2022:10.6%|2023:8.6%|2024:5.0%|2025:8.7%\n\nBALANCE SHEET (AED): 2024: Assets 3,052,162, PPE 27,019, Receivables(net) 2,158,771, Cash 596,391, SF 2,280,401, Payables 315,989, Gratuity 455,772, Liabilities 771,761, NO DEBT. 2023: Assets 2,608,431, Receivables 1,694,922, Cash 609,646, SF 1,952,985. 2022: Assets 2,471,898, Receivables 1,864,273, Cash 345,134, SF 1,478,022.\n\nEFFICIENCY: Staff: 2022:12|2023:14|2024:18|2025:16. Rev/Emp: 2022:446K|2023:396K|2024:363K|2025:487K. DSO~130d (2024). ECL 175,120. Bad debts 63,700. Receivables: GBP 48.5%, AED 26.8%, SGD 13.6%.\n\nPIPELINE: Enquiries: 2022:751|2023:729|2024:1,025|2025:1,252. Jobs: 2022:696|2023:651|2024:973|2025:1,136. Top: Hull&P&I Damage 413(2025) from 102(2022). Geo: UK 35%, UAE 31%, SG 11%, DE 6%. Growing: SG, DE, IT, US.\n\nDIVIDENDS: 2022:2M|2023:800K|2024:Nil.\n\nRATIOS (22/23/24): CR 3.79/9.69/9.52. QR 3.46/8.71/8.73. ROA 22.9/18.2/10.7%. ROE 38.3/24.3/14.4%. D/E 0.67/0.34/0.34. AT 2.17/2.12/2.14. Altman Z 8.18/9.92/8.72 (all safe).\n\nCASH FLOW 2024: Operating CF NEGATIVE AED 319 (receivables grew 454K).\n\nRULES: 1)ONLY use data above, NEVER fabricate. 2)Flag 2025 as UNAUDITED. 3)Rev/Employee is PRIMARY efficiency metric. 4)DuPont/Altman limited for asset-light firms. 5)Comparables: ABL Group, Constellation Marine, Matthew Daniel (NOT ADNOC/Gulf Nav). 6)Tax: 9% on profits>370K. 7)Key tension: revenue growing but costs outpacing, margin compressed 2022-2024, 2025 recovery.';
 
-const DATA = {
-  income: [
-    {year:2019,revenue:4110000,cor:2070000,gp:2040000,np:750000,admin:580000,sell:0,other:0,mgmt:0},
-    {year:2020,revenue:3940000,cor:2060000,gp:1880000,np:450000,admin:640000,sell:0,other:0,mgmt:0},
-    {year:2021,revenue:4680000,cor:2340000,gp:2340000,np:680000,admin:850000,sell:20000,other:80000,mgmt:720000},
-    {year:2022,revenue:5353463,cor:2726221,gp:2627242,np:566573,admin:950021,sell:121645,other:29003,mgmt:960000},
-    {year:2023,revenue:5541579,cor:2685526,gp:2856053,np:474862,admin:1148218,sell:59910,other:33063,mgmt:1140000},
-    {year:2024,revenue:6539201,cor:3380951,gp:3158250,np:327416,admin:1412945,sell:118336,other:99553,mgmt:1200000},
-    {year:2025,revenue:7798820,cor:1161596,gp:6637224,np:677573,admin:0,sell:109324,other:0,mgmt:1440000,unaudited:true},
-  ],
-  balance: [
-    {year:2022,ppe:32602,totalNC:50885,recGross:2011952,ecl:147679,recNet:1864273,cash:345134,totalCA:2421013,totalAssets:2471898,shareCapital:1000000,statRes:274661,re:982339,totalSF:1478022,gratuity:354360,payables:639516,totalLiab:993876},
-    {year:2023,ppe:23660,totalNC:41943,recGross:1840582,ecl:145661,recNet:1694922,cash:609646,totalCA:2566488,totalAssets:2608431,shareCapital:1000000,statRes:322147,re:609715,totalSF:1952985,gratuity:390505,payables:264941,totalLiab:655446},
-    {year:2024,ppe:27019,totalNC:45302,recGross:2333891,ecl:175120,recNet:2158771,cash:596391,totalCA:3006860,totalAssets:3052162,shareCapital:1000000,statRes:354889,re:904389,totalSF:2280401,gratuity:455772,payables:315989,totalLiab:771761},
-  ],
-  cashflow: [
-    {year:2022,profit:566573,dep:7849,opCF:655993,capex:-17270,netChange:-32546},
-    {year:2023,profit:474862,dep:8942,opCF:264411,capex:0,netChange:264512},
-    {year:2024,profit:327416,dep:9577,opCF:-319,capex:-12936,netChange:-13255},
-  ],
-  staff: [{year:2022,n:12},{year:2023,n:14},{year:2024,n:18},{year:2025,n:16}],
-  pipeline: [
-    {year:2022,enq:751,jobs:696,inv:622,pend:74},
-    {year:2023,enq:729,jobs:651,inv:610,pend:41},
-    {year:2024,enq:1025,jobs:973,inv:748,pend:225},
-    {year:2025,enq:1252,jobs:1136,inv:1013,pend:123},
-  ],
-  jobs: [
-    {type:"Hull & P&I Damage Survey",y22:102,y23:105,y24:204,y25:413},
-    {type:"Cargo Damage",y22:363,y23:326,y24:509,y25:197},
-    {type:"H&M Condition Survey",y22:57,y23:49,y24:45,y25:45},
-    {type:"Risk Assessment",y22:56,y23:61,y24:64,y25:92},
-    {type:"P&I Condition Survey",y22:39,y23:36,y24:45,y25:48},
-    {type:"Yacht & Boat",y22:21,y23:36,y24:59,y25:42},
-    {type:"Desktop Survey",y22:26,y23:18,y24:23,y25:68},
-    {type:"Other",y22:86,y23:89,y24:71,y25:125},
-  ],
-  receivables: [
-    {bucket:"< 3 months",y22:1080988,y23:871011,y24:1134245},
-    {bucket:"3-6 months",y22:351603,y23:381377,y24:489978},
-    {bucket:"6-12 months",y22:338630,y23:242352,y24:359427},
-    {bucket:"> 12 months",y22:240730,y23:345842,y24:175120},
-  ],
-  costs: [
-    {item:"Salary Expenses",y22:2240150,y23:2454267,y24:2882593,y25:3337913},
-    {item:"Management Remuneration",y22:960000,y23:1140000,y24:1200000,y25:1440000},
-    {item:"Sub-contracting",y22:858911,y23:644302,y24:833482,y25:872214},
-    {item:"Survey Expenses",y22:36733,y23:71723,y24:197720,y25:289382},
-    {item:"Admin Payroll",y22:127065,y23:218463,y24:375971,y25:405398},
-    {item:"Insurance",y22:91216,y23:95489,y24:112112,y25:134002},
-    {item:"Office Rent",y22:97654,y23:105525,y24:123262,y25:158007},
-    {item:"Selling/BDM",y22:121645,y23:59910,y24:118336,y25:109324},
-    {item:"Travelling",y22:56817,y23:58196,y24:76832,y25:55851},
-    {item:"Legal & Prof.",y22:31366,y23:34834,y24:29233,y25:72913},
-    {item:"Other",y22:269689,y23:413982,y24:431042,y25:384647},
-  ],
-  geo: {
-    2024:[{c:"UAE",v:2048127,p:31},{c:"UK",v:2294245,p:35},{c:"Singapore",v:721351,p:11},{c:"Germany",v:387098,p:6},{c:"Netherlands",v:176417,p:3},{c:"Monaco",v:251026,p:4},{c:"Italy",v:120941,p:2},{c:"USA",v:113798,p:2},{c:"Other",v:426198,p:6}],
-    2023:[{c:"UAE",v:1826029,p:33},{c:"UK",v:2099671,p:38},{c:"Singapore",v:456882,p:8},{c:"Germany",v:115207,p:2},{c:"Netherlands",v:302374,p:5},{c:"Monaco",v:319327,p:6},{c:"Greece",v:114410,p:2},{c:"Other",v:307679,p:6}],
-    2022:[{c:"UAE",v:1683540,p:31},{c:"UK",v:2444572,p:46},{c:"Singapore",v:342400,p:6},{c:"Other",v:882951,p:17}]
-  },
-  monthly2025:[638023,704572,651531,447880,592709,611005,609264,853502,522083,781106,518859,868285],
-  monthly2024:[432204,488038,515089,414946,647861,428269,650950,445063,665302,546460,632464,672556],
-  dividends:[{year:2022,div:2000000,re:982339},{year:2023,div:800000,re:609715},{year:2024,div:0,re:904389}],
-};
-
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const fmtN = n => n==null?'—':n.toLocaleString();
-const fmtAED = n => n==null?'—':'AED '+n.toLocaleString();
-const fmtM = n => Math.abs(n)>=1e6?(n/1e6).toFixed(1)+'M':Math.abs(n)>=1e3?Math.round(n/1e3)+'K':n.toLocaleString();
-const pctCh = (c,p) => p===0?0:((c-p)/p*100);
-
-// ═══ TAB SWITCHING ═══
-let chartsInitialized = false;
-function switchTab(id) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  document.getElementById('tab-'+id).classList.add('active');
-  if (id === 'dashboard' && !chartsInitialized) { initDashboard(); chartsInitialized = true; }
-  if (id === 'scenarios') { initScenarios(); }
-  if (id === 'data') { initDataTables(); }
+function addMsg(role,text){var el=document.createElement('div');el.className='msg '+role;el.textContent=text;document.getElementById('chat-messages').appendChild(el);document.getElementById('chat-messages').scrollTop=999999;return el;}
+function askQ(q){document.getElementById('chat-input').value=q;sendMsg();}
+async function sendMsg(){
+  var inp=document.getElementById('chat-input'),q=inp.value.trim();if(!q)return;inp.value='';addMsg('user',q);
+  document.getElementById('send-btn').disabled=true;
+  chatHistory.push({role:'user',parts:[{text:q}]});
+  var typ=addMsg('bot','Analyzing...');typ.classList.add('typing');
+  try{
+    var r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:QM_PROMPT}]},contents:chatHistory,generationConfig:{temperature:0.3,maxOutputTokens:1500}})});
+    var d=await r.json();
+    if(d.error){typ.textContent='Error: '+(d.error.message||'API failed');typ.classList.remove('typing');}
+    else{var a=d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts&&d.candidates[0].content.parts[0]?d.candidates[0].content.parts[0].text:'No response.';typ.textContent=a;typ.classList.remove('typing');chatHistory.push({role:'model',parts:[{text:a}]});}
+  }catch(e){typ.textContent='Error: '+e.message;typ.classList.remove('typing');}
+  document.getElementById('send-btn').disabled=false;document.getElementById('chat-messages').scrollTop=999999;
 }
 
-// ═══ LOCAL INTELLIGENCE ENGINE (No API — 100% Free) ═══
-
-// Pre-computed ratios for the engine
-const R = DATA.income.filter(x=>x.year>=2022).map(i=>{
-  const b=DATA.balance.find(x=>x.year===i.year), s=DATA.staff.find(x=>x.year===i.year), p=DATA.pipeline.find(x=>x.year===i.year);
-  return {year:i.year, gm:+(i.gp/i.revenue*100).toFixed(1), nm:+(i.np/i.revenue*100).toFixed(1),
-    revEmp:s?Math.round(i.revenue/s.n):null, profEmp:s?Math.round(i.np/s.n):null,
-    dso:b?Math.round(b.recNet/i.revenue*365):null, cr:b?+(b.totalCA/b.payables).toFixed(2):null,
-    roe:b?+(i.np/b.totalSF*100).toFixed(1):null, roa:b?+(i.np/b.totalAssets*100).toFixed(1):null,
-    avgFee:p?Math.round(i.revenue/p.jobs):null, conv:p?+(p.jobs/p.enq*100).toFixed(1):null, ua:i.unaudited};
-});
-
-// Answer knowledge base — each entry has keywords + the answer
-function buildAnswer(q) {
-  const ql = q.toLowerCase().trim();
-  const has = (...w) => w.some(x => ql.includes(x));
-  const D = DATA.income;
-  const fY = yr => D.find(x=>x.year===yr);
-  const yearMatch = ql.match(/\b(2019|2020|2021|2022|2023|2024|2025)\b/);
-  const qYear = yearMatch ? +yearMatch[1] : null;
-
-  // ── YEAR-SPECIFIC REVENUE ──
-  if (qYear && has('revenue','sales','turnover','top line','income') && !has('per employee','cost','expense','ratio','monthly','geograph')) {
-    const y = fY(qYear); if (!y) return `No data for ${qYear}.`;
-    const prev = fY(qYear-1);
-    const ch = prev ? ((y.revenue-prev.revenue)/prev.revenue*100).toFixed(1) : null;
-    return `**Revenue ${qYear}${y.unaudited?' ⚠️':''}:** AED ${fmtN(y.revenue)}${ch?` (${ch>=0?'▲':'▼'}${Math.abs(ch)}% YoY)`:''}\nGross Profit: AED ${fmtN(y.gp)} (${(y.gp/y.revenue*100).toFixed(1)}%)\nNet Profit: AED ${fmtN(y.np)} (${(y.np/y.revenue*100).toFixed(1)}% margin)${y.mgmt?'\nMgmt Remuneration: AED '+fmtN(y.mgmt):''}${y.unaudited?'\n⚠️ Unaudited management accounts. 2025 GP uses different cost classification.':''}`;
-  }
-  // ── YEAR-SPECIFIC PROFIT ──
-  if (qYear && has('profit','net income','bottom line','earning')) {
-    const y = fY(qYear); if (!y) return `No data for ${qYear}.`;
-    return `**Net Profit ${qYear}${y.unaudited?' ⚠️':''}:** AED ${fmtN(y.np)} (${(y.np/y.revenue*100).toFixed(1)}% margin)\nRevenue: AED ${fmtN(y.revenue)} | GP: AED ${fmtN(y.gp)}${y.unaudited?'\n⚠️ Unaudited':''}`;
-  }
-  // ── YEAR-SPECIFIC BALANCE SHEET ──
-  if (qYear && has('balance','asset','liabil','equity','cash','receivable','payable')) {
-    const b = DATA.balance.find(x=>x.year===qYear);
-    if (!b) return `Balance sheet available for 2022-2024 only.`;
-    return `**Balance Sheet ${qYear} (AED)**\nTotal Assets: ${fmtN(b.totalAssets)} | PP&E: ${fmtN(b.ppe)}\nReceivables (net): ${fmtN(b.recNet)} | Cash: ${fmtN(b.cash)}\nShareholders' Funds: ${fmtN(b.totalSF)} | Payables: ${fmtN(b.payables)}\nGratuity: ${fmtN(b.gratuity)} | Total Liabilities: ${fmtN(b.totalLiab)}\nCurrent Ratio: ${(b.totalCA/b.payables).toFixed(2)}x`;
-  }
-
-  // ── SINGLE WORD: "revenue" ──
-  if (ql==='revenue'||ql==='sales'||ql==='turnover'||has('what is revenue','whats the revenue','total revenue','show revenue','tell me revenue','how much revenue','annual revenue','revenue data','all revenue','revenue number','revenue figure')) {
-    return `**Revenue (AED)**\n2019: 4,110,000 → 2020: 3,940,000 (▼4.1%) → 2021: 4,680,000 (▲18.8%) → 2022: 5,353,463 (▲14.4%) → 2023: 5,541,579 (▲3.5%) → 2024: 6,539,201 (▲18.0%) → 2025⚠️: 7,798,820 (▲19.3%)\n\n7-year CAGR: ~11.3%. All-time high in 2025⚠️. Revenue nearly doubled since 2019.`;
-  }
-  // ── SINGLE WORD: "profit" ──
-  if (ql==='profit'||ql==='net profit'||ql==='net income'||ql==='earnings'||ql==='bottom line'||has('whats the profit','show profit','profit data','how much profit','total profit','profit number','profit figure')) {
-    return `**Net Profit (AED)**\n2019: 750,000 (18.2%) → 2020: 450,000 (11.4%) → 2021: 680,000 (14.5%) → 2022: 566,573 (10.6%) → 2023: 474,862 (8.6%) → 2024: 327,416 (**5.0%**) → 2025⚠️: 677,573 (8.7%)\n\nPeaked at AED 750K (2019). Hit low of AED 327K (2024). Cost growth outpacing revenue growth.`;
-  }
-  // ── GROSS PROFIT ──
-  if (has('gross profit','gross margin','gross income') && !has('net','all ratio','kpi')) {
-    return `**Gross Profit (AED)**\n2019: 2,040,000 (49.6%) → 2020: 1,880,000 (47.7%) → 2021: 2,340,000 (50.0%) → 2022: 2,627,242 (49.1%) → 2023: 2,856,053 (51.5%) → 2024: 3,158,250 (48.3%) → 2025⚠️: 6,637,224 (85.1%**)\n\n⚠️ 2025 GM (85.1%) NOT comparable — different cost classification in management accounts. Comparable range: 47-52%.`;
-  }
-  // ── EBITDA ──
-  if (has('ebitda','ebit','operating profit','operating income')) {
-    return `**EBITDA (AED)**\n2022: 574,422 (10.7%) | 2023: 483,804 (8.7%) | 2024: 336,993 (5.2%)\n(= Net Profit + Depreciation. No interest/tax in 2022-2023. Zero corp tax paid in 2024.)`;
-  }
-  // ── WORKING CAPITAL ──
-  if (has('working capital','wc ','quick ratio','net current')) {
-    return `**Working Capital (AED)**\n2022: 1,781,497 (CR: 3.79x) | 2023: 2,301,547 (CR: 9.69x) | 2024: 2,690,871 (CR: 9.52x)\nExceptionally strong. Debt-free. Industry norm: 1.5-3.0x.`;
-  }
-
-  // ── COMPANY / PROFILE ──
-  if (has('who is quest','about quest','company','profile','what does quest','overview','background','established','founded','motto','mission','quality','policy','address','location','office','contact','phone','email','website','where is','registration','license')) {
-    return `**Quest Marine LLC**\n"Maritime…. Anytime" — "Quest for Excellence"\nEst: 16 Dec 2010 | Dubai, UAE (TECOM)\nOffice 901, Al Ameri Building, PO Box 123276\nPhone: +971 4 4425206 | +971 56 1707676 (24/7)\nEmail: qmoperations@questmarine.ae\nWeb: quest-marine.com\nLic: 647752 | Reg: 1068801 | Branch: Fujairah FZC\n\nB2B marine surveying & consultancy. Job-based revenue. IFRS compliant.\nVAT: 5% | Corp Tax: 9% (>AED 375K) | Banker: Emirates NBD\nAuditor: Prudential Auditing | Memberships: IIMS, RINA, IMarEST\nAssociates: TMN Surveys, Creative Marine India\n\nShareholders: Uday Moorthi 50% (MD), Anita Moorthi 25%, Rohan Moorthi 25%\nCapital: AED 1,000,000. Staff: 16 (12 surveyors + 4 admin).`;
-  }
-  // ── SHAREHOLDERS ──
-  if (has('shareholder','shareholding','who owns','ownership','shuraa','capital structure')) {
-    return `**Shareholders (31 Dec 2024)**\nUday Moorthi: 50% (MD) | Anita Moorthi: 25% | Rohan Moorthi: 25%\nCapital: AED 1,000,000. Prior to Oct 2023: Shuraa Trading held 51%.`;
-  }
-  // ── SPECIFIC PEOPLE ──
-  if (has('uday') && !has('shareholder','remun','compensation')) {
-    return `**Uday Moorthi — Managing Director, 50% shareholder**\nSpecializations: Fleet valuations, marine asset appraisal, collision/salvage surveys, H&M for underwriters, P&I condition, risk assessment, new build management, pre-purchase inspections.\nRemuneration: AED 960K(22)→1.14M(23)→1.2M(24)→1.44M(25⚠️)`;
-  }
-  if (has('riddhi')) return `**Riddhi Moorthi — Finance Manager**\nFinance & Accounts, Audit & Reviews, Admin & Operations. Corporate sponsor for GIP III project.`;
-  if (has('joel','pinheiro')) return `**Joel Lloyd Pinheiro — General Manager**\nMWS, casualty investigations, marine claims, yacht surveying, shipyard risk management, P&I/H&M condition surveys.`;
-  if (has('karun','sharma')) return `**Karun Sharma — Projects & Engineering Manager**\nNew builds, repairs, conversions, technical specs, cost estimation, commissioning, heavy-lift surveys.`;
-  if (has('ryan','d\'souza','dsouza')) return `**Ryan D'souza — Marine Surveyor & Consultant**\nFleet valuations, JH 2013 surveys, casualty investigations, warranty surveys, shipyard risk management.`;
-  if (has('rohan') && !has('shareholder')) return `**Rohan Moorthi — Commercial Manager (25% shareholder)**\nBusiness Development, QM representation at seminars/forums, public relations.`;
-  if (has('anita') && !has('shareholder')) return `**Anita Moorthi — Managing Partner (25% shareholder)**\nAccounts, HR, Audit Control.`;
-  if (has('divakar','bangera') && !has('vinyas')) return `**Divakar Bangera — Marine Cargo Surveyor & Admin Manager**\nBulk/bagged cargo surveys, draft surveys, containerized cargo, ISO management.`;
-  if (has('kiran','das')) return `**Kiran Das — Marine Cargo Surveyor**\nPetroleum/chemical quantity inspection, bunker surveys, heavy-lift projects, vessel hold inspections.`;
-
-  // ── TEAM / STAFF ──
-  if (has('staff','employee','headcount','team','workforce','surveyor','how many people','personnel','roster')) {
-    return `**Team: 16 staff (2025⚠️)** — 12 surveyors + 4 admin\nHistory: 12(2022) → 14(2023) → 18(2024) → 16(2025)\n\n**Leadership:** Uday Moorthi (MD), Anita Moorthi, Riddhi Moorthi (Finance), Rohan Moorthi (Commercial)\n**Senior:** Joel Pinheiro (GM), Karun Sharma (Projects), Ryan D'souza\n**Surveyors:** Divakar Bangera, Ahamed Yazar, Capt. Aswin Vijay, Aravindan Rangan, Kiran Das, Vinyas Bangera, Rahul Amin, Jaya Prakash, Jamie Jr. Canas\n**Admin:** Nina Ricci Del Rosario, Hussaini Mithaiwala\n\nRev/Employee: ${fmtN(R[0].revEmp)}(22) → ${fmtN(R[1].revEmp)}(23) → ${fmtN(R[2].revEmp)}(24) → ${fmtN(R[3].revEmp)}(25⚠️)\nJobs/surveyor (2025): ~95`;
-  }
-
-  // ── WHY / CONCERNS / RISKS ──
-  if (has('why','concern','risk','problem','issue','weakness','threat','challenge','what wrong','worry','danger','red flag','declining','going down')) {
-    return `**Key Concerns**\n\n1. **Margin Compression:** Net margin 10.6%(22)→8.6%(23)→**5.0%**(24)→8.7%(25⚠️)\n2. **Costs > Revenue:** Total costs +53% vs revenue +46% (2022-2025)\n   - Salaries: +49% | Admin Payroll: +219% | Survey Exp: +688%\n3. **Cash Flow Collapse:** Operating CF dropped to negative AED 319 (2024)\n4. **DSO High:** 120 days vs 60-90 industry norm\n5. **Avg Fee Declining:** AED 8,512(23) → 6,721(24) — price pressure\n6. **Mgmt Remuneration:** AED 1.2M = 366% of net profit (2024)\n7. **FX Risk:** 48.5% of receivables in GBP\n8. **Cargo Damage Decline:** 509(24) → 197(25) — major service line shrinking\n\n2025 shows recovery but structural cost issues persist.`;
-  }
-
-  // ── COSTS ──
-  if (has('cost','expense','spend','overhead','indirect','opex','salary','salaries','wages','rent','insurance','sub-contract','subcontract','travel','where is money','how much spend')) {
-    return `**Costs (AED, 2025⚠️)**\nSalaries: 3,337,913 | Mgmt Remun: 1,440,000 | Sub-contract: 872,214\nAdmin Pay: 405,398 | Survey Exp: 289,382 | Rent: 158,007\nInsurance: 134,002 | Selling: 109,324 | Legal: 72,913 | Travel: 55,851\nTotal Indirect: 5,959,651 + CoR 1,161,596 = ~AED 7.12M\n\nCost growth 2022→2025: +53% (vs revenue +46% ⚠️)\nSalaries = 48% of all costs. Mgmt remun = 18.5% of revenue.`;
-  }
-
-  // ── PER EMPLOYEE ──
-  if (has('per employee','rev/emp','revenue/employee','productivity','efficiency per')) {
-    return `**Rev/Employee (PRIMARY metric)**\n2022: AED ${fmtN(R[0].revEmp)} (12 staff) | 2023: ${fmtN(R[1].revEmp)} (14) | 2024: ${fmtN(R[2].revEmp)} (18) | 2025⚠️: ${fmtN(R[3].revEmp)} (16)\nProfit/Emp: ${fmtN(R[0].profEmp)} → ${fmtN(R[1].profEmp)} → ${fmtN(R[2].profEmp)} → ${fmtN(R[3].profEmp)}⚠️\nIndustry benchmark: AED 400-500K/employee.`;
-  }
-
-  // ── BALANCE SHEET (general) ──
-  if (has('balance sheet','total asset','net worth','financial position','book value','equity','shareholders fund')) {
-    return `**Balance Sheet (AED)**\n| | 2022 | 2023 | 2024 |\nAssets: 2,471,898 | 2,608,431 | 3,052,162\nRec(net): 1,864,273 | 1,694,922 | 2,158,771\nCash: 345,134 | 609,646 | 596,391\nSH Funds: 1,478,022 | 1,952,985 | 2,280,401\nPayables: 639,516 | 264,941 | 315,989\nLiabilities: 993,876 | 655,446 | 771,761\n\nAsset-light (PP&E AED 27K). Receivables = 71% of assets. Debt-free. CR: ${R[2].cr}x.`;
-  }
-
-  // ── CASH ──
-  if (has('cash flow','cash position','liquidity','operating cash','free cash','cash balance','bank balance','how much cash')) {
-    return `**Cash Flow (AED)**\nOp CF: 655,993(22) → 264,411(23) → **(319)**(24)\nCash Balance: 345,134(22) → 609,646(23) → 596,391(24)\n⚠️ 2024 OpCF collapsed — receivables grew AED 454K (cash trapped). Target DSO <90 days.`;
-  }
-
-  // ── DSO / RECEIVABLES ──
-  if (has('dso','days sales','receivable','ageing','aging','collection','owed','outstanding','debtors','ecl','who owes','debtor','overdue')) {
-    return `**DSO:** 127(22) → 112(23) → 120(24). Industry: 60-90 days.\n\n**Ageing 2024 (AED):** <3m: 1,134,245 | 3-6m: 489,978 | 6-12m: 359,427 | >12m: 175,120 | ECL: (175,120)\nTotal Gross: 2,333,891 | Net: 2,158,771\n\n**Currency:** GBP 48.5% | AED 26.8% | SGD 13.6%\n⚠️ High GBP exposure = FX risk. 3-6m bucket grew 28%.`;
-  }
-
-  // ── GEOGRAPHIC ──
-  if (has('geograph','country','region','market','uae','uk ','united kingdom','singapore','germany','international','client base','where do','which countr')) {
-    return `**Geographic Revenue 2024 (AED)**\nUK: 2,294,245 (35%) | UAE: 2,048,127 (31%) | Singapore: 721,351 (11%)\nGermany: 387,098 (6%) | Monaco: 251,026 (4%) | Netherlands: 176,417 (3%)\nItaly: 120,941 (2%) | USA: 113,798 (2%) | Other: 426,198 (6%)\n\nTrends: UK declining (46%→35%), Singapore tripling (6%→11%), Germany 9x growth. Italy & USA new in 2024.`;
-  }
-
-  // ── PIPELINE / JOBS ──
-  if (has('pipeline','enquir','conversion','job','invoice','pending','workload','funnel','how many job','job count','conversion rate')) {
-    return `**Pipeline**\n2022: 751 enq → 696 jobs → 622 inv (74 pend, 92.7% conv)\n2023: 729 → 651 → 610 (41 pend, 89.3%)\n2024: 1,025 → 973 → 748 (**225 pend**, 94.9%, inv rate only **76.9%** ⚠️)\n2025⚠️: 1,252 → 1,136 → 1,013 (123 pend, 90.7%)\n\nAvg Fee/Job: 7,692(22) → 8,512(23) → 6,721(24) → 6,866(25⚠️)\n\n**Jobs by Type (2025):** Hull&P&I: **413**(4x!) | Cargo: **197**(▼61%) | Risk: 92 | Desktop: 68`;
-  }
-
-  // ── ALL RATIOS / KPIs / DASHBOARD / SUMMARY ──
-  if (has('ratio','kpi','metric','indicator','dashboard','summary','snapshot','overview','at a glance','quick','financial summary','key number','all number','show me everything','full','complete')) {
-    return `**All KPIs & Ratios**\n\n| Metric | 2022 | 2023 | 2024 | 2025⚠️ |\n| Revenue (M) | 5.35 | 5.54 | 6.54 | 7.80 |\n| Net Profit (K) | 567 | 475 | 327 | 678 |\n| Gross Margin | 49.1% | 51.5% | 48.3% | 85.1%** |\n| Net Margin | 10.6% | 8.6% | **5.0%** | 8.7% |\n| Rev/Emp | ${fmtN(R[0].revEmp)} | ${fmtN(R[1].revEmp)} | ${fmtN(R[2].revEmp)} | ${fmtN(R[3].revEmp)} |\n| Profit/Emp | ${fmtN(R[0].profEmp)} | ${fmtN(R[1].profEmp)} | ${fmtN(R[2].profEmp)} | ${fmtN(R[3].profEmp)} |\n| DSO | 127 | 112 | 120 | — |\n| Current Ratio | ${R[0].cr}x | ${R[1].cr}x | ${R[2].cr}x | — |\n| ROE | ${R[0].roe}% | ${R[1].roe}% | ${R[2].roe}% | — |\n| ROA | ${R[0].roa}% | ${R[1].roa}% | ${R[2].roa}% | — |\n| Avg Fee/Job | ${fmtN(R[0].avgFee)} | ${fmtN(R[1].avgFee)} | ${fmtN(R[2].avgFee)} | ${fmtN(R[3].avgFee)} |\n| Enq→Job | ${R[0].conv}% | ${R[1].conv}% | ${R[2].conv}% | ${R[3].conv}% |\n| Staff | 12 | 14 | 18 | 16 |\n| Jobs | 696 | 651 | 973 | 1,136 |\n| Cash | 345K | 610K | 596K | — |\n| Dividends | 2.0M | 800K | 0 | — |\n\n**⚠️** 2025 GM not comparable. DuPont/Z-Score limited for asset-light firms.`;
-  }
-
-  // ── INDIVIDUAL RATIOS ──
-  if (has('roe','return on equity')) return `**ROE:** ${R[0].roe}%(22) → ${R[1].roe}%(23) → ${R[2].roe}%(24). Declining on margin erosion. Limited for asset-light firms.`;
-  if (has('roa','return on asset')) return `**ROA:** ${R[0].roa}%(22) → ${R[1].roa}%(23) → ${R[2].roa}%(24). Declining. Assets mostly receivables.`;
-  if (has('current ratio') && !has('all','kpi')) return `**Current Ratio:** ${R[0].cr}x(22) → ${R[1].cr}x(23) → ${R[2].cr}x(24). Very strong (industry: 1.5-3.0x). Debt-free.`;
-  if (has('net margin') && !has('all','kpi','revenue')) return `**Net Margin:** 10.6%(22) → 8.6%(23) → **5.0%**(24) → 8.7%(25⚠️). Costs growing faster than revenue.`;
-  if (has('gross margin') && !has('all','kpi','net')) return `**Gross Margin:** 49.1%(22) → 51.5%(23) → 48.3%(24) → 85.1%(25⚠️**). 2025 not comparable (different cost basis). Stable at ~48-52%.`;
-  if (has('avg fee','average fee','fee per job','price per job')) return `**Avg Fee/Job:** AED ${fmtN(R[0].avgFee)}(22) → ${fmtN(R[1].avgFee)}(23) → ${fmtN(R[2].avgFee)}(24) → ${fmtN(R[3].avgFee)}(25⚠️). Declining — price pressure or job mix shift.`;
-
-  // ── DIVIDENDS ──
-  if (has('dividend','distribution','payout','retained earning')) {
-    return `**Dividends (AED):** 2,000,000(22) → 800,000(23) → 0(24)\nRetained Earnings: 982,339(22) → 609,715(23) → 904,389(24)\n2022 dividend (AED 2M) exceeded net profit (AED 567K). Zero in 2024 — prudent.\nStatutory Reserve: 10% of profit per UAE law.`;
-  }
-
-  // ── REMUNERATION ──
-  if (has('remuneration','compensation','managing partner pay','mgmt pay','director pay','director salary','how much does uday earn','how much paid')) {
-    return `**Mgmt Remuneration (to Uday Moorthi)**\n2022: AED 960,000 (17.9% rev, 169.5% profit) | 2023: 1,140,000 (20.6%, 240.1%)\n2024: 1,200,000 (18.4%, **366.5%** of profit) | 2025⚠️: 1,440,000 (18.5%, 212.5%)\nIf excluded, adjusted 2024 net profit = AED 1,527,416 (23.4% margin).`;
-  }
-
-  // ── MONTHLY ──
-  if (has('monthly','seasonal','which month','jan','feb','mar ','apr','may ','jun','jul','aug','sep','oct','nov','dec','quarter','q1','q2','q3','q4','month by month','best month','worst month','peak')) {
-    return `**Monthly Revenue (AED)**\n**2025⚠️:** ${MONTHS.map((m,i)=>m+': '+fmtN(DATA.monthly2025[i])).join(' | ')}\nTotal: 7,798,820 | Avg: 650K\n\n**2024:** ${MONTHS.map((m,i)=>m+': '+fmtN(DATA.monthly2024[i])).join(' | ')}\nTotal: 6,539,201 | Avg: 545K\n\nPeaks: Aug(854K), Dec(868K). Troughs: Apr(448K), Nov(519K). Every 2025 month > 2024 except May.`;
-  }
-
-  // ── FORECASTS / SCENARIOS ──
-  if (has('forecast','project','2026','predict','future','next year','budget','what if','break even','break-even','scenario','target','how much need','how much revenue need')) {
-    const bc = 7121247, af = 6866;
-    return `**Projections & Scenarios**\n\nJob Model: Revenue = Jobs × Avg Fee\n2025 actual: 1,136 × AED 6,866 = AED 7.80M\n\n**2026 Scenarios:**\nBase: 1,300 × 7,000 = **AED 9.10M** (+17%)\nBull: 1,450 × 7,500 = **AED 10.88M** (+39%)\nBear: 1,100 × 6,500 = **AED 7.15M** (-8%)\n\nBreak-even: AED ${fmtN(bc)} (~${Math.ceil(bc/af)} jobs)\nFor AED 1M profit: ~${Math.ceil((bc+1e6)/af)} jobs\nMargin of Safety: ${((7798820-bc)/7798820*100).toFixed(1)}%\n\n⚠️ QM has no formal budgets. Use Scenarios tab for interactive modeling.`;
-  }
-
-  // ── BENCHMARK ──
-  if (has('benchmark','industry','peer','compare','abl','constellation','matthew daniel','how does qm','competitive','market position')) {
-    return `**Industry Benchmark (vs ABL Group, Constellation Marine, Matthew Daniel)**\n\n| Metric | QM 2024 | Industry | |\n| Rev Growth | 18.0% | 5-12% | ✅ |\n| Gross Margin | 48.3% | 40-55% | ✅ |\n| Net Margin | 5.0% | 8-15% | ⚠️ Below |\n| Rev/Emp | AED 363K | 350-500K | ✅ Low end |\n| DSO | 120 days | 60-90 | ❌ High |\n| Current Ratio | 9.52x | 1.5-3.0x | ✅ |\n\nStrong growth, but margins and DSO need work.`;
-  }
-
-  // ── DUPONT ──
-  if (has('dupont','decompos')) {
-    const d=D[5],b=DATA.balance[2];
-    return `**DuPont (2024):** ROE = ${(d.np/d.revenue*100).toFixed(1)}% × ${(d.revenue/b.totalAssets).toFixed(2)}x × ${(b.totalAssets/b.totalSF).toFixed(2)}x = **${R[2].roe}%**\nTrend: 38.3%(22) → 24.3%(23) → 14.4%(24)\n⚠️ Limited for asset-light firms (PP&E only AED 27K, zero debt).`;
-  }
-  // ── Z-SCORE ──
-  if (has('altman','z-score','z score','bankruptcy','distress','solvency')) {
-    return `**Altman Z': ~4.8+ (Safe >2.9)**\nQM has zero bankruptcy risk. High score due to no debt + strong current assets.\n⚠️ Limited applicability — designed for manufacturing firms. Better metrics: cash flow, DSO, client concentration.`;
-  }
-
-  // ── SERVICES ──
-  if (has('service','what do','survey type','hull','cargo damage','p&i','inspection','what kind','vessel inspection','damage investigation','ship management','yacht','risk assessment','warranty','salvage','consultation')) {
-    return `**Services (quest-marine.com)**\n• Risk Assessment Audits (ISM/ISO)\n• Vessel Inspection (bow-to-stern compliance)\n• Cargo Inspection (oranges to oversized cargo)\n• Damage Investigation (underwriters/owners/charterers)\n• Ship Management (operational advisory)\n• Ship Assistance (casualty response)\n• Yacht Inspections (for owners/brokers/banks/buyers)\n• Consultation (insurance claims management)\n\n**2025 Job Mix:** Hull&P&I: 413(dominant,4x!) | Cargo: 197(▼61%) | Risk: 92 | Desktop: 68 | Yacht: 42`;
-  }
-
-  // ── TAX ──
-  if (has('tax','corporate tax','vat')) return `**Tax:** VAT 5%. Corp Tax 9% (>AED 375K, from Jan 2024). 2024: zero tax paid (taxable loss after exemption). 87.4% of revenue is zero-rated.`;
-
-  // ── ASSOCIATES ──
-  if (has('associate','partner company','tmn','creative marine','global reach')) return `**Associates:** TMN Surveys (tmn-surveys.com) and Creative Marine India (creativemarine.in). These trusted partners enable QM to provide services globally regardless of location or timing.`;
-
-  // ── GREETINGS ──
-  if (has('hello','hi ','hey','good morning','good afternoon','good evening','help','what can you','start','begin')) {
-    return `Hello! I have **all QM financial data (2019-2025)** ready.\n\nTry: "revenue" · "profit" · "costs" · "ratios" · "DSO" · "pipeline" · "forecast" · "team" · "services" · "balance sheet" · "cash flow" · "dividends" · "EBITDA" · "working capital" · "benchmark"\n\nOr ask by year: "revenue 2024" · "profit 2023" · "balance sheet 2022"`;
-  }
-  if (has('thank','thanks','great','perfect','awesome','nice','good job','well done','cool','amazing')) return `You're welcome! Try the Dashboard for charts, Scenarios for modeling, or ask me any keyword.`;
-
-  // ── CATCH-ALL ──
-  return `Try a keyword: **revenue** · **profit** · **gross profit** · **EBITDA** · **costs** · **cash** · **balance sheet** · **working capital** · **ratios** · **KPI** · **DSO** · **receivables** · **pipeline** · **jobs** · **geographic** · **monthly** · **dividends** · **remuneration** · **team** · **services** · **benchmark** · **forecast** · **DuPont** · **Z-Score** · **company** · **shareholders**\n\nOr by year: "revenue 2024" · "profit 2023" · "balance sheet 2022"`;
+function setMode(mode){
+  document.getElementById('mode-text').classList.toggle('active',mode==='text');
+  document.getElementById('mode-voice').classList.toggle('active',mode==='voice');
+  document.getElementById('text-panel').style.display=mode==='text'?'block':'none';
+  document.getElementById('voice-panel').classList.toggle('active',mode==='voice');
+  document.getElementById('chat-suggestions').style.display=mode==='text'?'flex':'none';
 }
 
-function askSuggested(btn) {
-  sendChat(btn.textContent);
+// DASHBOARD
+var NAVY='#0A2540',GOLD='#D4A843',TEAL='#0F6E56',CORAL='#D85A30',BLUE='#378ADD',PINK='#D4537E',PURPLE='#534AB7';
+var years=['2019','2020','2021','2022','2023','2024','2025*'];
+var rev=[4.11,3.94,4.68,5.35,5.54,6.54,7.80];
+var np=[0.75,0.45,0.68,0.57,0.47,0.33,0.68];
+var gm=[null,null,null,49,52,48,null];
+var nm=[18.2,11.4,14.5,10.6,8.6,5.0,8.7];
+var isDark=matchMedia('(prefers-color-scheme:dark)').matches;
+var gridC=isDark?'rgba(255,255,255,.08)':'rgba(0,0,0,.06)';
+var txtC=isDark?'rgba(255,255,255,.5)':'rgba(0,0,0,.45)';
+var charts={};
+
+function switchTab(id,el){document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.getElementById('sec-'+id).classList.add('active');el.classList.add('active');setTimeout(initCharts,50);}
+
+document.getElementById('kpi-area').innerHTML=[{l:'Revenue (2025)',v:'AED 7.80M',d:'+19.3%',c:'up'},{l:'Net profit (2025)',v:'AED 678K',d:'+107%',c:'up'},{l:'Net margin',v:'8.7%',d:'vs 5.0% (2024)',c:'up'},{l:'Rev/employee',v:'AED 487K',d:'+34%',c:'up'},{l:'Jobs completed',v:'1,136',d:'+16.7%',c:'up'},{l:'DSO (2024)',v:'~130 days',d:'High risk',c:'down'}].map(function(k){return '<div class="kpi"><div class="kpi-label">'+k.l+'</div><div class="kpi-val">'+k.v+'</div><div class="kpi-delta '+k.c+'">'+k.d+'</div></div>'}).join('');
+
+document.getElementById('ratio-area').innerHTML=[{n:'Current ratio',v:['3.79','9.69','9.52']},{n:'Quick ratio',v:['3.46','8.71','8.73']},{n:'ROA',v:['22.9%','18.2%','10.7%']},{n:'ROE',v:['38.3%','24.3%','14.4%']},{n:'Debt-to-equity',v:['0.67','0.34','0.34']},{n:'Asset turnover',v:['2.17x','2.12x','2.14x']},{n:'Altman Z-Score',v:['8.18','9.92','8.72']},{n:'Gross margin',v:['49%','52%','48%']},{n:'Net margin',v:['10.6%','8.6%','5.0%']}].map(function(r){return '<div class="ratio-card"><div class="ratio-name">'+r.n+'</div><div class="ratio-vals">'+r.v.map(function(v,i){return '<div class="ratio-yr">'+v+'<span>'+['2022','2023','2024'][i]+'</span></div>'}).join('')+'</div></div>'}).join('');
+
+var bO={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:txtC,font:{size:11}}},y:{grid:{color:gridC},ticks:{color:txtC,font:{size:11}}}}};
+var wL={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{boxWidth:10,font:{size:11},color:txtC}}},scales:{x:{grid:{display:false},ticks:{color:txtC,font:{size:11}}},y:{grid:{color:gridC},ticks:{color:txtC,font:{size:11}}}}};
+
+function initCharts(){var c;
+c=document.getElementById('revChart');if(c&&c.offsetParent!==null&&!charts.rev){charts.rev=new Chart(c,{type:'bar',data:{labels:years,datasets:[{label:'Revenue',data:rev,backgroundColor:NAVY,borderRadius:4,barPercentage:.5},{label:'Net Profit',data:np,backgroundColor:GOLD,borderRadius:4,barPercentage:.5}]},options:wL})}
+c=document.getElementById('pipeChart');if(c&&c.offsetParent!==null&&!charts.pipe){charts.pipe=new Chart(c,{type:'line',data:{labels:['2022','2023','2024','2025*'],datasets:[{label:'Enquiries',data:[751,729,1025,1252],borderColor:BLUE,borderWidth:2.5,pointRadius:4,tension:.3,fill:false},{label:'Jobs',data:[696,651,973,1136],borderColor:TEAL,borderWidth:2.5,pointRadius:4,tension:.3,fill:false}]},options:wL})}
+c=document.getElementById('geoChart');if(c&&c.offsetParent!==null&&!charts.geo){charts.geo=new Chart(c,{type:'doughnut',data:{labels:['UK 35%','UAE 31%','Singapore 11%','Germany 6%','Others 17%'],datasets:[{data:[35,31,11,6,17],backgroundColor:[NAVY,TEAL,BLUE,GOLD,CORAL],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:11},color:txtC,padding:8}}}}})}
+c=document.getElementById('serviceChart');if(c&&c.offsetParent!==null&&!charts.svc){charts.svc=new Chart(c,{type:'doughnut',data:{labels:['Hull & P&I 36%','Cargo Damage 28%','Ship Mgmt 15%','Risk/Other 21%'],datasets:[{data:[413,318,170,235],backgroundColor:[BLUE,CORAL,PURPLE,GOLD],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:11},color:txtC,padding:8}}}}})}
+c=document.getElementById('marginChart');if(c&&c.offsetParent!==null&&!charts.margin){charts.margin=new Chart(c,{type:'line',data:{labels:years,datasets:[{label:'Gross margin',data:gm,borderColor:TEAL,borderWidth:2.5,pointRadius:4,tension:.3,fill:false,spanGaps:false},{label:'Net margin',data:nm,borderColor:GOLD,borderWidth:2.5,pointRadius:4,tension:.3,fill:false}]},options:JSON.parse(JSON.stringify(wL))});charts.margin.options.scales.y.ticks.callback=function(v){return v+'%'};charts.margin.update()}
+c=document.getElementById('costChart');if(c&&c.offsetParent!==null&&!charts.cost){charts.cost=new Chart(c,{type:'doughnut',data:{labels:['Staff 36%','Mgmt 18%','Sub-contract 13%','Admin 22%','Selling 2%','Other 9%'],datasets:[{data:[2349749,1200000,833482,1412945,118336,297273],backgroundColor:[NAVY,GOLD,CORAL,BLUE,PINK,TEAL],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'50%',plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:10},color:txtC,padding:6}}}}})}
+c=document.getElementById('mgmtChart');if(c&&c.offsetParent!==null&&!charts.mgmt){charts.mgmt=new Chart(c,{type:'bar',data:{labels:['2022','2023','2024','2025*'],datasets:[{label:'Mgmt remuneration',data:[960000,1140000,1200000,1440000],backgroundColor:CORAL,borderRadius:4,barPercentage:.4},{label:'Net profit',data:[566573,474862,327416,677573],backgroundColor:TEAL,borderRadius:4,barPercentage:.4}]},options:JSON.parse(JSON.stringify(wL))});charts.mgmt.options.scales.y.ticks.callback=function(v){return 'AED '+(v/1e6).toFixed(1)+'M'};charts.mgmt.update()}
+c=document.getElementById('rpeChart');if(c&&c.offsetParent!==null&&!charts.rpe){charts.rpe=new Chart(c,{type:'bar',data:{labels:['2022','2023','2024','2025*'],datasets:[{data:[446,396,363,487],backgroundColor:[NAVY,NAVY,CORAL,TEAL],borderRadius:6,barPercentage:.5}]},options:JSON.parse(JSON.stringify(bO))});charts.rpe.options.scales.y.ticks.callback=function(v){return 'AED '+v+'K'};charts.rpe.update()}
+c=document.getElementById('hcChart');if(c&&c.offsetParent!==null&&!charts.hc){charts.hc=new Chart(c,{type:'bar',data:{labels:['2022','2023','2024','2025*'],datasets:[{label:'Staff',data:[12,14,18,16],backgroundColor:BLUE,borderRadius:4,barPercentage:.35,yAxisID:'y'},{label:'Jobs',data:[696,651,973,1136],backgroundColor:GOLD,borderRadius:4,barPercentage:.35,yAxisID:'y1'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{boxWidth:10,font:{size:11},color:txtC}}},scales:{x:{grid:{display:false},ticks:{color:txtC,font:{size:11}}},y:{position:'left',grid:{color:gridC},ticks:{color:txtC,font:{size:11}},title:{display:true,text:'Staff',color:txtC,font:{size:11}}},y1:{position:'right',grid:{display:false},ticks:{color:txtC,font:{size:11}},title:{display:true,text:'Jobs',color:txtC,font:{size:11}}}}}})}
+c=document.getElementById('feeChart');if(c&&c.offsetParent!==null&&!charts.fee){var fd=[5353463/696,5541579/651,6539201/973,7798820/1136].map(function(v){return Math.round(v)});charts.fee=new Chart(c,{type:'line',data:{labels:['2022','2023','2024','2025*'],datasets:[{data:fd,borderColor:PURPLE,borderWidth:2.5,pointRadius:5,pointBackgroundColor:PURPLE,tension:.3,fill:false}]},options:JSON.parse(JSON.stringify(bO))});charts.fee.options.scales.y.ticks.callback=function(v){return 'AED '+v.toLocaleString()};charts.fee.update()}
 }
 
-// ═══ CLAUDE API SYSTEM PROMPT — QM DATA + GENERAL INTELLIGENCE + WEB SEARCH ═══
-const SYSTEM_PROMPT = `You are Quest Marine LLC's AI-powered Financial Intelligence Assistant. You have TWO capabilities:
-
-**CAPABILITY 1 — QM Financial Data (use this for any QM-specific question):**
-You have ALL of Quest Marine's verified financial data embedded below. For any question about QM's finances, revenue, costs, team, operations, ratios, projections etc — answer ONLY from this data. Never fabricate QM numbers.
-
-**CAPABILITY 2 — General Intelligence (use this for everything else):**
-For questions about marine industry trends, finance concepts (DCF, LBO, WACC, valuation), business strategy, market analysis, economic conditions, UAE business environment, shipping industry, insurance industry, competitor analysis, career advice, or ANY other topic — use your general knowledge to give helpful, accurate answers. You are a knowledgeable financial analyst and marine industry expert.
-
-When the user asks about both (e.g. "How does QM compare to industry trends?"), combine QM data with general knowledge.
-
-Always be helpful. Never refuse to answer. If unsure whether it's about QM or general, provide both perspectives.
-
-═══ QUEST MARINE LLC — COMPLETE FINANCIAL DATA ═══
-
-## COMPANY
-Quest Marine LLC (QM) — B2B marine surveying & consultancy, Dubai UAE. Est 16 Dec 2010. FZC/LLC.
-Tagline: "Maritime…. Anytime" — "Quest for Excellence"
-Office: 901, Al Ameri Building (Deyaar Tower), TECOM, Dubai. PO Box 123276.
-Phone: +971 4 4425206 | +971 56 1707676 (24/7). Email: qmoperations@questmarine.ae
-License: 647752, Reg: 1068801. Branch: Fujairah FZC. Web: quest-marine.com
-IFRS compliant, ISA audited by Prudential Auditing. Banker: Emirates NBD.
-VAT: 5%. Corp Tax: 9% on >AED 375K (from Jan 2024). AED pegged to USD at 3.6725.
-Memberships: IIMS, RINA, IMarEST, Marine Valuators, Average Adjusters Association.
-Associates: TMN Surveys, Creative Marine India.
-Services: Risk Assessment Audits, Vessel Inspection, Cargo Inspection, Damage Investigation, Ship Management, Ship Assistance, Yacht Inspections, Marine Consultation/Claims.
-Clients: Shipping companies, cargo operators, insurance firms, P&I clubs, banks, brokers, lawyers.
-
-## SHAREHOLDERS (31 Dec 2024)
-Uday Moorthi: Managing Partner 50% (AED 500K). Anita Moorthi: 25%. Rohan Moorthi: 25%.
-Capital: AED 1,000,000. Prior to Oct 2023: Shuraa Trading held 51%.
-
-## TEAM (16 staff, 2025 — 12 surveyors + 4 admin)
-Historical: 12(2022)→14(2023)→18(2024)→16(2025)
-Leadership: Uday Moorthi (MD), Anita Moorthi (Managing Partner — Accounts/HR), Riddhi Moorthi (Finance Manager), Rohan Moorthi (Commercial Manager — BD/PR)
-Senior: Joel Lloyd Pinheiro (GM — MWS/casualty/yacht/claims), Karun Sharma (Projects & Engineering — new builds/repairs/specs), Ryan D'souza (Surveyor — valuations/JH2013/warranty)
-Surveyors: Divakar Bangera (Cargo & Admin), Ahamed Yazar (Cargo), Capt. Aswin Vijay (H&M/P&I), Aravindan Rangan (H&M/P&I), Kiran Das (Petroleum/chemical), Vinyas Bangera (Junior), Rahul Amin, Jaya Prakash Mandali, Jamie Jr. Canas (Trainee — yacht)
-Admin: Nina Ricci Del Rosario, Hussaini Mithaiwala (Financial Analyst)
-
-## INCOME STATEMENT (AED)
-2019: Rev 4,110,000 | CoR 2,070,000 | GP 2,040,000 | NP 750,000
-2020: Rev 3,940,000 | CoR 2,060,000 | GP 1,880,000 | NP 450,000
-2021: Rev 4,680,000 | CoR 2,340,000 | GP 2,340,000 | NP 680,000 | Mgmt 720,000
-2022: Rev 5,353,463 | CoR 2,726,221 | GP 2,627,242 | NP 566,573 | Admin 950,021 | Sell 121,645 | Mgmt 960,000
-2023: Rev 5,541,579 | CoR 2,685,526 | GP 2,856,053 | NP 474,862 | Admin 1,148,218 | Sell 59,910 | Mgmt 1,140,000
-2024: Rev 6,539,201 | CoR 3,380,951 | GP 3,158,250 | NP 327,416 | Admin 1,412,945 | Sell 118,336 | Mgmt 1,200,000
-2025*: Rev 7,798,820 | CoR 1,161,596 | GP 6,637,224 | NP 677,573 | Sell 109,324 | Mgmt 1,440,000 (*UNAUDITED)
-
-## DETAILED COSTS (AED, 2022→2023→2024→2025*)
-Salary: 2,240,150→2,454,267→2,882,593→3,337,913 | Mgmt Remun: 960,000→1,140,000→1,200,000→1,440,000
-Sub-contracting: 858,911→644,302→833,482→872,214 | Survey Exp: 36,733→71,723→197,720→289,382
-Admin Payroll: 127,065→218,463→375,971→405,398 | Insurance: 91,216→95,489→112,112→134,002
-Rent: 97,654→105,525→123,262→158,007 | Selling: 121,645→59,910→118,336→109,324
-Travel: 56,817→58,196→76,832→55,851 | Legal: 31,366→34,834→29,233→72,913
-Bad Debts: 0→0→63,682→11,010 | Depreciation: 7,849→8,942→9,577→9,577
-Total Indirect: 3,891,246→4,350,691→5,180,583→5,959,651
-
-## BALANCE SHEET (AED)
-2022: Assets 2,471,898 | PP&E 32,602 | Rec(net) 1,864,273 | Cash 345,134 | CA 2,421,013 | SHF 1,478,022 | Gratuity 354,360 | Payables 639,516 | Liab 993,876
-2023: Assets 2,608,431 | PP&E 23,660 | Rec(net) 1,694,922 | Cash 609,646 | CA 2,566,488 | SHF 1,952,985 | Gratuity 390,505 | Payables 264,941 | Liab 655,446
-2024: Assets 3,052,162 | PP&E 27,019 | Rec(net) 2,158,771 | Cash 596,391 | CA 3,006,860 | SHF 2,280,401 | Gratuity 455,772 | Payables 315,989 | Liab 771,761
-
-## CASH FLOW (AED)
-2022: OpCF 655,993 | CapEx (17,270) | Net (32,546) | 2023: OpCF 264,411 | Net 264,512 | 2024: OpCF (319) | CapEx (12,936) | Net (13,255)
-
-## MONTHLY REVENUE (AED)
-2025*: Jan 638,023 | Feb 704,572 | Mar 651,531 | Apr 447,880 | May 592,709 | Jun 611,005 | Jul 609,264 | Aug 853,502 | Sep 522,083 | Oct 781,106 | Nov 518,859 | Dec 868,285 | Total 7,798,820
-2024: Jan 432,204 | Feb 488,038 | Mar 515,089 | Apr 414,946 | May 647,861 | Jun 428,269 | Jul 650,950 | Aug 445,063 | Sep 665,302 | Oct 546,460 | Nov 632,464 | Dec 672,556 | Total 6,539,201
-
-## GEOGRAPHIC REVENUE (AED)
-2024: UK 2,294,245(35%) | UAE 2,048,127(31%) | Singapore 721,351(11%) | Germany 387,098(6%) | Monaco 251,026(4%) | Netherlands 176,417(3%) | Italy 120,941(2%) | USA 113,798(2%)
-2023: UAE 33% | UK 38% | Singapore 8% | 2022: UAE 31% | UK 46% | Singapore 6%
-
-## PIPELINE
-2022: 751→696→622 (74 pend, 92.7%) | 2023: 729→651→610 (41, 89.3%) | 2024: 1,025→973→748 (225!, 94.9%, inv 76.9%) | 2025*: 1,252→1,136→1,013 (123, 90.7%)
-
-## JOBS BY TYPE (2022→2025*): Hull&P&I: 102→413(4x!) | Cargo: 363→197(▼61%) | Risk: 56→92 | Desktop: 26→68
-
-## RECEIVABLES 2024: <3m 1,134,245 | 3-6m 489,978 | 6-12m 359,427 | >12m 175,120 | ECL (175,120) | Currency: GBP 48.5%, AED 26.8%, SGD 13.6%
-
-## KEY RATIOS: NM%: 10.6(22)→8.6(23)→5.0(24)→8.7*(25) | Rev/Emp: 446K→396K→363K→487K* | DSO: 127→112→120 | CR: 3.79x→9.69x→9.52x | ROE: 38.3→24.3→14.4 | ROA: 22.9→18.2→10.7 | AvgFee: 7,692→8,512→6,721→6,866* | EBITDA: 574K(22)→484K(23)→337K(24)
-
-## DIVIDENDS: 2M(22)→800K(23)→0(24) | RE: 982K→610K→904K
-## MGMT REMUN: 960K(22)→1.14M(23)→1.2M(24)→1.44M(25*) [18-20% of rev, 170-367% of NP]
-
-═══ RESPONSE RULES ═══
-1. For QM questions: cite exact AED figures, flag 2025 as ⚠️ unaudited, note 2025 GM not comparable
-2. For general questions: be a knowledgeable financial analyst — explain concepts clearly, give industry context
-3. For combined questions: blend QM data with industry knowledge
-4. Rev/Employee = primary efficiency metric for service firms
-5. DuPont/Z-Score: limited for asset-light firms — always flag
-6. Benchmark peers: ABL Group, Constellation Marine, Matthew Daniel
-7. Always suggest actionable next steps for QM questions
-8. Be concise but thorough. Use tables and bullet points.
-9. You can discuss: finance theory, valuation, marine industry, UAE business, strategy, economics, careers, and any other topic
-10. If asked about current events or real-time data you don't have, say so honestly and suggest where to look`;
-
-const chatHistory = [];
-
-// ═══ AI CHAT: Proxied through Vercel → Google Gemini (YOUR key on server) ═══
-// Users never need an API key — your Gemini key is stored securely in Vercel env vars
-
-async function sendChat(overrideText) {
-  const input = document.getElementById('chatInput');
-  const text = overrideText || input.value.trim();
-  if (!text) return;
-  input.value = '';
-
-  const sa = document.getElementById('suggestedArea');
-  if (sa) sa.style.display = 'none';
-
-  addChatMsg('user', text);
-  chatHistory.push({ role: 'user', parts: [{ text: text }] });
-
-  const typingId = addTypingIndicator();
-  input.disabled = true;
-  document.getElementById('sendBtn').disabled = true;
-
-  try {
-    const resp = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system: SYSTEM_PROMPT,
-        history: chatHistory,
-      }),
-    });
-
-    removeTyping(typingId);
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err?.error || 'Server error ' + resp.status);
-    }
-
-    const data = await resp.json();
-    const reply = data?.reply || buildAnswer(text);
-
-    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
-    addChatMsg('assistant', reply);
-
-  } catch (err) {
-    removeTyping(typingId);
-    const localReply = buildAnswer(text);
-    addChatMsg('assistant', localReply);
-    chatHistory.push({ role: 'model', parts: [{ text: localReply }] });
-  }
-
-  input.disabled = false;
-  document.getElementById('sendBtn').disabled = false;
-  input.focus();
+function runScenario(){
+  var gr=+document.getElementById('sl-rev').value,gs=+document.getElementById('sl-staff').value,gm=+document.getElementById('sl-mgmt').value,gsub=+document.getElementById('sl-sub').value;
+  document.getElementById('v-rev').textContent=gr+'%';document.getElementById('v-staff').textContent=gs+'%';document.getElementById('v-mgmt').textContent=gm+'%';document.getElementById('v-sub').textContent=gsub+'%';
+  var pR=Math.round(7798820*(1+gr/100)),pS=Math.round(3340000*(1+gs/100)),pM=Math.round(1440000*(1+gm/100)),pSub=Math.round(872214*(1+gsub/100)),pC=pS+pM+pSub+469033,pN=pR-pC,pMar=(pN/pR*100).toFixed(1);
+  var f=function(v){return 'AED '+Math.abs(v).toLocaleString()};
+  document.getElementById('scenario-out').innerHTML='<h4>Projected 2026 estimates</h4><div class="sc-row"><span>Revenue</span><span style="font-weight:500">'+f(pR)+'</span></div><div class="sc-row"><span>Total costs</span><span style="font-weight:500">'+f(pC)+'</span></div><div class="sc-row"><span>Net profit</span><span style="font-weight:500;color:'+(pN>=0?TEAL:CORAL)+'">'+(pN<0?'-':'')+f(pN)+'</span></div><div class="sc-row"><span>Net margin</span><span style="font-weight:500;color:'+(parseFloat(pMar)>=8?TEAL:CORAL)+'">'+pMar+'%</span></div><div class="sc-row"><span>Rev/employee (16)</span><span style="font-weight:500">'+f(Math.round(pR/16))+'</span></div>';
 }
-
-function addChatMsg(role, text) {
-  const container = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-  div.className = 'msg ' + role;
-  if (role === 'assistant') {
-    div.innerHTML = '<div class="msg-label">⚓ QM Financial Intelligence</div><div>' + formatMd(text) + '</div>';
-  } else {
-    div.textContent = text;
-  }
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-}
-
-function addTypingIndicator() {
-  const container = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-  div.className = 'msg assistant';
-  div.id = 'typing-' + Date.now();
-  div.innerHTML = '<div class="msg-label">⚓ QM Financial Intelligence</div><div class="typing-dots"><span></span><span></span><span></span></div><div style="color:var(--grey-400);font-size:12px;margin-top:6px">Analyzing QM financial data...</div>';
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-  return div.id;
-}
-
-function removeTyping(id) {
-  const el = document.getElementById(id);
-  if (el) el.remove();
-}
-
-function formatMd(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/^### (.+)$/gm, '<div style="font-size:14px;font-weight:700;color:var(--navy);margin:10px 0 4px">$1</div>')
-    .replace(/^## (.+)$/gm, '<div style="font-size:15px;font-weight:700;color:var(--navy);margin:12px 0 4px">$1</div>')
-    .replace(/^# (.+)$/gm, '<div style="font-size:16px;font-weight:700;color:var(--navy);margin:14px 0 6px">$1</div>')
-    .replace(/^[-•] (.+)$/gm, '<div style="padding-left:16px;margin:2px 0">• $1</div>')
-    .replace(/`([^`]+)`/g, '<code style="background:var(--grey-100);padding:1px 5px;border-radius:3px;font-size:12px">$1</code>')
-    .replace(/\n{2,}/g, '<br><br>')
-    .replace(/\n/g, '<br>');
-}
-
-// ═══ DASHBOARD ═══
-function initDashboard() {
-  // KPIs
-  const d = DATA.income;
-  const latest = d[d.length-1], prev = d[d.length-2];
-  const staff25 = 16, staff24 = 18;
-  const revEmp25 = latest.revenue / staff25;
-  const revEmp24 = prev.revenue / staff24;
-  const dso24 = (DATA.balance[2].recNet / prev.revenue * 365).toFixed(0);
-  const jobs25 = DATA.pipeline[3].jobs;
-  const jobs24 = DATA.pipeline[2].jobs;
-
-  const kpis = [
-    { icon:'💰', label:'Revenue (2025)', value:'AED '+fmtM(latest.revenue), trend:pctCh(latest.revenue,prev.revenue), warn:true, sub:'⚠️ Unaudited' },
-    { icon:'📊', label:'Net Profit (2025)', value:'AED '+fmtM(latest.np), trend:pctCh(latest.np,prev.np), warn:true, sub:'⚠️ Unaudited' },
-    { icon:'👥', label:'Rev/Employee', value:'AED '+fmtM(revEmp25), trend:pctCh(revEmp25,revEmp24) },
-    { icon:'📅', label:'DSO (2024)', value:dso24+' days', sub:'Days Sales Outstanding' },
-    { icon:'🔄', label:'Jobs (2025)', value:jobs25.toLocaleString(), trend:pctCh(jobs25,jobs24), warn:true, sub:'⚠️ Unaudited' },
-    { icon:'💵', label:'Cash (2024)', value:'AED '+fmtM(DATA.balance[2].cash), sub:'Emirates NBD' },
-  ];
-
-  const grid = document.getElementById('kpiGrid');
-  grid.innerHTML = kpis.map(k => `
-    <div class="kpi-card ${k.warn?'warning':''}">
-      ${k.warn?'<span class="kpi-warn">⚠️</span>':''}
-      <div class="kpi-label">${k.icon} ${k.label}</div>
-      <div class="kpi-value">${k.value}</div>
-      ${k.sub?`<div class="kpi-sub">${k.sub}</div>`:''}
-      ${k.trend!==undefined?`<div class="kpi-trend ${k.trend>=0?'up':'down'}">${k.trend>=0?'▲':'▼'} ${Math.abs(k.trend).toFixed(1)}% YoY</div>`:''}
-    </div>
-  `).join('');
-
-  // Charts
-  const navy = '#003366', teal = '#007B8A', gold = '#D4A843', green = '#16A34A', orange = '#EA580C', red = '#DC2626', purple = '#7C3AED', blue = '#2563EB';
-  const years = d.map(r=>r.year);
-
-  // Revenue & Profit
-  new Chart(document.getElementById('chartRevProfit'), {
-    type: 'bar',
-    data: {
-      labels: years,
-      datasets: [
-        { label: 'Revenue', data: d.map(r=>r.revenue), backgroundColor: navy+'CC', borderRadius: 4 },
-        { label: 'Net Profit', data: d.map(r=>r.np), backgroundColor: gold+'CC', borderRadius: 4 },
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{font:{size:11}}}}, scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:10}},grid:{color:'#E5E7EB'}},x:{ticks:{font:{size:10}},grid:{display:false}}} }
-  });
-
-  // Margins
-  const marginYears = [2022,2023,2024,2025];
-  const gm = marginYears.map(y => { const r = d.find(x=>x.year===y); return +(r.gp/r.revenue*100).toFixed(1); });
-  const nm = marginYears.map(y => { const r = d.find(x=>x.year===y); return +(r.np/r.revenue*100).toFixed(1); });
-  new Chart(document.getElementById('chartMargins'), {
-    type: 'line',
-    data: {
-      labels: marginYears,
-      datasets: [
-        { label: 'Gross Margin %', data: gm, borderColor: teal, backgroundColor: teal+'22', tension: 0.3, fill: true, pointRadius: 5, borderWidth: 2.5 },
-        { label: 'Net Margin %', data: nm, borderColor: gold, backgroundColor: gold+'22', tension: 0.3, fill: true, pointRadius: 5, borderWidth: 2.5 },
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{font:{size:11}}}}, scales:{y:{min:0,max:100,ticks:{font:{size:10}},grid:{color:'#E5E7EB'}},x:{ticks:{font:{size:10}},grid:{display:false}}} }
-  });
-
-  // Cost breakdown
-  const costData = [
-    {label:'Salaries',value:3337913,color:navy},
-    {label:'Mgmt Remun.',value:1440000,color:teal},
-    {label:'Sub-contract',value:872214,color:gold},
-    {label:'Admin Pay',value:405398,color:green},
-    {label:'Survey Exp.',value:289382,color:orange},
-    {label:'Other',value:614744,color:purple},
-  ];
-  new Chart(document.getElementById('chartCosts'), {
-    type: 'doughnut',
-    data: {
-      labels: costData.map(c=>c.label),
-      datasets: [{ data: costData.map(c=>c.value), backgroundColor: costData.map(c=>c.color+'CC'), borderWidth: 2, borderColor: '#fff' }]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{font:{size:10},padding:8}},tooltip:{callbacks:{label:ctx=>'AED '+ctx.raw.toLocaleString()}}} }
-  });
-
-  // Employee
-  const empData = marginYears.map(y => { const r=d.find(x=>x.year===y); const s=DATA.staff.find(x=>x.year===y); return s?Math.round(r.revenue/s.n):0; });
-  const profEmp = marginYears.map(y => { const r=d.find(x=>x.year===y); const s=DATA.staff.find(x=>x.year===y); return s?Math.round(r.np/s.n):0; });
-  new Chart(document.getElementById('chartEmployee'), {
-    type: 'bar',
-    data: {
-      labels: marginYears,
-      datasets: [
-        { label: 'Rev/Employee', data: empData, backgroundColor: teal+'CC', borderRadius: 4 },
-        { label: 'Profit/Employee', data: profEmp, backgroundColor: gold+'CC', borderRadius: 4 },
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{font:{size:11}}}}, scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:10}},grid:{color:'#E5E7EB'}},x:{ticks:{font:{size:10}},grid:{display:false}}} }
-  });
-
-  // Monthly
-  new Chart(document.getElementById('chartMonthly'), {
-    type: 'line',
-    data: {
-      labels: MONTHS,
-      datasets: [
-        { label: '2025 ⚠️', data: DATA.monthly2025, borderColor: teal, backgroundColor: teal+'15', tension: 0.3, fill: true, borderWidth: 2.5, pointRadius: 3 },
-        { label: '2024', data: DATA.monthly2024, borderColor: navy, backgroundColor: navy+'10', tension: 0.3, fill: true, borderWidth: 2, pointRadius: 3 },
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{font:{size:11}}}}, scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:10}},grid:{color:'#E5E7EB'}},x:{ticks:{font:{size:10}},grid:{display:false}}} }
-  });
-
-  // Geo
-  const geo = DATA.geo[2024];
-  const geoColors = [navy,teal,gold,green,orange,purple,blue,red,'#06B6D4'];
-  new Chart(document.getElementById('chartGeo'), {
-    type: 'doughnut',
-    data: {
-      labels: geo.map(g=>g.c+' '+g.p+'%'),
-      datasets: [{ data: geo.map(g=>g.v), backgroundColor: geoColors.map(c=>c+'CC'), borderWidth: 2, borderColor: '#fff' }]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{font:{size:10},padding:6}},tooltip:{callbacks:{label:ctx=>'AED '+ctx.raw.toLocaleString()}}} }
-  });
-
-  // Pipeline chart
-  const pipe = DATA.pipeline;
-  new Chart(document.getElementById('chartPipeline'), {
-    type: 'bar',
-    data: {
-      labels: pipe.map(p=>p.year+(p.year===2025?' ⚠️':'')),
-      datasets: [
-        { label: 'Enquiries', data: pipe.map(p=>p.enq), backgroundColor: navy+'BB', borderRadius: 4 },
-        { label: 'Jobs Done', data: pipe.map(p=>p.jobs), backgroundColor: teal+'BB', borderRadius: 4 },
-        { label: 'Invoiced', data: pipe.map(p=>p.inv), backgroundColor: gold+'BB', borderRadius: 4 },
-        { label: 'Pending', data: pipe.map(p=>p.pend), backgroundColor: '#DC2626BB', borderRadius: 4 },
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{font:{size:10}}}}, scales:{y:{ticks:{font:{size:10}},grid:{color:'#E5E7EB'}},x:{ticks:{font:{size:10}},grid:{display:false}}} }
-  });
-
-  // Receivables Ageing
-  const recLabels = DATA.receivables.map(r=>r.bucket);
-  new Chart(document.getElementById('chartReceivables'), {
-    type: 'bar',
-    data: {
-      labels: recLabels,
-      datasets: [
-        { label: '2022', data: DATA.receivables.map(r=>r.y22), backgroundColor: navy+'AA', borderRadius: 3 },
-        { label: '2023', data: DATA.receivables.map(r=>r.y23), backgroundColor: teal+'AA', borderRadius: 3 },
-        { label: '2024', data: DATA.receivables.map(r=>r.y24), backgroundColor: gold+'AA', borderRadius: 3 },
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{font:{size:10}}}}, scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:10}},grid:{color:'#E5E7EB'}},x:{ticks:{font:{size:9}},grid:{display:false}}} }
-  });
-
-  // Jobs by Type (2025)
-  const jTypes = DATA.jobs;
-  new Chart(document.getElementById('chartJobTypes'), {
-    type: 'doughnut',
-    data: {
-      labels: jTypes.map(j=>j.type),
-      datasets: [{ data: jTypes.map(j=>j.y25), backgroundColor: [navy,teal,gold,green,orange,purple,blue,red,'#06B6D4'].map(c=>c+'CC'), borderWidth: 2, borderColor: '#fff' }]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{font:{size:9},padding:4}}} }
-  });
-
-  // Dividends vs Profit
-  new Chart(document.getElementById('chartDividends'), {
-    type: 'bar',
-    data: {
-      labels: ['2022','2023','2024'],
-      datasets: [
-        { label: 'Net Profit', data: [566573,474862,327416], backgroundColor: teal+'CC', borderRadius: 4 },
-        { label: 'Dividend', data: [2000000,800000,0], backgroundColor: gold+'CC', borderRadius: 4 },
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{font:{size:10}}}}, scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:10}},grid:{color:'#E5E7EB'}},x:{ticks:{font:{size:10}},grid:{display:false}}} }
-  });
-}
-
-// ═══ SCENARIOS ═══
-let scenarioChart = null, sensitivityChart = null, costSensChart = null, ratioCompChart = null;
-let scenariosInitDone = false;
-
-function initScenarios() {
-  updateScenario();
-  updateJobModel();
-  updateBreakEven();
-  renderScenarioChart();
-  if (!scenariosInitDone) { renderSensitivityChart(); renderCostSensitivityChart(); renderRatioCompareChart(); scenariosInitDone = true; }
-}
-
-function updateScenario() {
-  const rg = +document.getElementById('revGrowthSlider').value;
-  const cg = +document.getElementById('costGrowthSlider').value;
-  const sc = +document.getElementById('staffSlider').value;
-  const mg = +document.getElementById('mgmtGrowthSlider').value;
-  document.getElementById('revGrowthVal').textContent = rg + '%';
-  document.getElementById('costGrowthVal').textContent = cg + '%';
-  document.getElementById('staffVal').textContent = sc;
-  document.getElementById('mgmtGrowthVal').textContent = mg + '%';
-
-  const baseRev = 7798820, baseCost = 7121247, baseMgmt = 1440000;
-  const pRev = baseRev * (1 + rg/100);
-  const pCostEx = (baseCost - baseMgmt) * (1 + cg/100);
-  const pMgmt = baseMgmt * (1 + mg/100);
-  const pCost = pCostEx + pMgmt;
-  const pProfit = pRev - pCost;
-  const pMargin = (pProfit / pRev * 100);
-  const pGM = ((pRev - pRev*0.149) / pRev * 100); // approx 2024 COR ratio
-
-  document.getElementById('projRev').textContent = fmtAED(Math.round(pRev));
-  document.getElementById('projProfit').textContent = fmtAED(Math.round(pProfit));
-  document.getElementById('projProfit').style.color = pProfit >= 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('projProfitBox').style.background = pProfit >= 0 ? '#ECFDF5' : '#FEF2F2';
-  document.getElementById('projCosts').textContent = fmtAED(Math.round(pCost));
-  document.getElementById('projMargin').textContent = pMargin.toFixed(1) + '%';
-  document.getElementById('projMargin').style.color = pMargin >= 0 ? 'var(--green)' : 'var(--red)';
-
-  // Projected Ratios
-  document.getElementById('projRevEmp').textContent = 'AED ' + fmtM(Math.round(pRev / sc));
-  document.getElementById('projProfEmp').textContent = 'AED ' + fmtM(Math.round(pProfit / sc));
-  document.getElementById('projROE').textContent = (pProfit / 2280401 * 100).toFixed(1) + '%';
-  document.getElementById('projROA').textContent = (pProfit / 3052162 * 100).toFixed(1) + '%';
-  document.getElementById('projGM').textContent = pGM.toFixed(1) + '%';
-  document.getElementById('projMgmtRev').textContent = (pMgmt / pRev * 100).toFixed(1) + '%';
-
-  updateBreakEven();
-  renderRatioCompareChart();
-}
-
-function updateBreakEven() {
-  const baseCost = 7121247, avgFee = 6866;
-  const beRev = baseCost;
-  const beJobs = Math.ceil(beRev / avgFee);
-  const t1Rev = baseCost + 1000000;
-  const t1Jobs = Math.ceil(t1Rev / avgFee);
-  const t2Rev = baseCost + 2000000;
-  const t2Jobs = Math.ceil(t2Rev / avgFee);
-  const mos = ((7798820 - beRev) / 7798820 * 100);
-
-  document.getElementById('breakEvenRev').textContent = 'AED ' + fmtM(beRev);
-  document.getElementById('breakEvenJobs').textContent = '≈ ' + beJobs.toLocaleString() + ' jobs @ AED ' + avgFee.toLocaleString();
-  document.getElementById('target1MRev').textContent = 'AED ' + fmtM(t1Rev);
-  document.getElementById('target1MJobs').textContent = '≈ ' + t1Jobs.toLocaleString() + ' jobs needed';
-  document.getElementById('target2MRev').textContent = 'AED ' + fmtM(t2Rev);
-  document.getElementById('target2MJobs').textContent = '≈ ' + t2Jobs.toLocaleString() + ' jobs needed';
-  document.getElementById('marginSafety').textContent = mos.toFixed(1) + '%';
-}
-
-function updateJobModel() {
-  const jobs = +document.getElementById('jobCountSlider').value;
-  const fee = +document.getElementById('avgFeeSlider').value;
-  document.getElementById('jobCountVal').textContent = jobs;
-  document.getElementById('avgFeeVal').textContent = fee.toLocaleString();
-  const rev = jobs * fee;
-  document.getElementById('jobFormula').textContent = jobs + ' × AED ' + fee.toLocaleString();
-  document.getElementById('jobRevenue').textContent = fmtAED(rev);
-  const ch = pctCh(rev, 7798820);
-  document.getElementById('jobVs').textContent = 'vs 2025: AED 7.8M (' + (ch>=0?'+':'') + ch.toFixed(1) + '%)';
-}
-
-function renderScenarioChart() {
-  const baseRev = 7798820, baseCost = 7121247;
-  const sc = [
-    {name:'Base',rg:15,cg:12},{name:'Bull',rg:25,cg:10},{name:'Bear',rg:5,cg:15},{name:'Stress',rg:-5,cg:20}
-  ];
-  const scData = sc.map(s => {
-    const r = baseRev*(1+s.rg/100), c = baseCost*(1+s.cg/100);
-    return { name:s.name, rev:Math.round(r), profit:Math.round(r-c), margin:((r-c)/r*100).toFixed(1) };
-  });
-
-  if (scenarioChart) scenarioChart.destroy();
-  scenarioChart = new Chart(document.getElementById('chartScenarios'), {
-    type: 'bar',
-    data: {
-      labels: scData.map(s=>s.name),
-      datasets: [
-        { label: 'Revenue', data: scData.map(s=>s.rev), backgroundColor: '#003366CC', borderRadius: 4 },
-        { label: 'Profit', data: scData.map(s=>s.profit), backgroundColor: '#D4A843CC', borderRadius: 4 },
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{font:{size:10}}}}, scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:9}},grid:{color:'#E5E7EB'}},x:{ticks:{font:{size:10}},grid:{display:false}}} }
-  });
-
-  document.getElementById('scenarioLabels').innerHTML = scData.map(s =>
-    `<div style="text-align:center;padding:6px;background:${+s.margin>0?'#ECFDF5':'#FEF2F2'};border-radius:6px;font-size:10px"><div style="font-weight:700">${s.name}</div><div>Margin: ${s.margin}%</div></div>`
-  ).join('');
-}
-
-function renderSensitivityChart() {
-  const baseRev = 7798820, baseCost = 7121247;
-  const growths = [-10,-5,0,5,10,15,20,25,30];
-  const m5 = growths.map(g => { const r=baseRev*(1+g/100); return +((r-baseCost*1.05)/r*100).toFixed(1); });
-  const m10 = growths.map(g => { const r=baseRev*(1+g/100); return +((r-baseCost*1.10)/r*100).toFixed(1); });
-  const m15 = growths.map(g => { const r=baseRev*(1+g/100); return +((r-baseCost*1.15)/r*100).toFixed(1); });
-  if (sensitivityChart) sensitivityChart.destroy();
-  sensitivityChart = new Chart(document.getElementById('chartSensitivity'), {
-    type:'line', data:{ labels:growths.map(g=>g+'%'), datasets:[
-      {label:'Cost +5%',data:m5,borderColor:'#16A34A',backgroundColor:'#16A34A18',fill:true,tension:0.3,borderWidth:2},
-      {label:'Cost +10%',data:m10,borderColor:'#D4A843',backgroundColor:'#D4A84318',fill:true,tension:0.3,borderWidth:2},
-      {label:'Cost +15%',data:m15,borderColor:'#DC2626',backgroundColor:'#DC262618',fill:true,tension:0.3,borderWidth:2},
-    ]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:10}}}},scales:{y:{title:{display:true,text:'Net Margin %',font:{size:9}},ticks:{font:{size:9}},grid:{color:'#E5E7EB'}},x:{title:{display:true,text:'Revenue Growth',font:{size:9}},ticks:{font:{size:8}},grid:{display:false}}}}
-  });
-}
-
-function renderCostSensitivityChart() {
-  const baseRev = 7798820*1.15, baseCost = 7121247;
-  const cgs = [-5,0,5,10,15,20,25];
-  const profits = cgs.map(cg => Math.round(baseRev - baseCost*(1+cg/100)));
-  if (costSensChart) costSensChart.destroy();
-  costSensChart = new Chart(document.getElementById('chartCostSensitivity'), {
-    type:'bar', data:{ labels:cgs.map(g=>'Cost '+g+'%'), datasets:[{label:'Net Profit (at Rev+15%)',data:profits,backgroundColor:profits.map(p=>p>=0?'#16A34ABB':'#DC2626BB'),borderRadius:4}] },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:10}}}},scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:9}},grid:{color:'#E5E7EB'}},x:{ticks:{font:{size:8}},grid:{display:false}}}}
-  });
-}
-
-function renderRatioCompareChart() {
-  const rg=+document.getElementById('revGrowthSlider').value, cg=+document.getElementById('costGrowthSlider').value, sc=+document.getElementById('staffSlider').value;
-  const pRev=7798820*(1+rg/100), pCost=7121247*(1+cg/100), pP=pRev-pCost;
-  const actual=[5.0,Math.round(6539201/18/1000),14.4,10.7,120,48.3];
-  const proj=[+(pP/pRev*100).toFixed(1),Math.round(pRev/sc/1000),+(pP/2280401*100).toFixed(1),+(pP/3052162*100).toFixed(1),110,48.3];
-  if (ratioCompChart) ratioCompChart.destroy();
-  ratioCompChart = new Chart(document.getElementById('chartRatioCompare'), {
-    type:'bar', data:{ labels:['Net Margin %','Rev/Emp (K)','ROE %','ROA %','DSO target','Gross Margin %'],
-      datasets:[{label:'2024 Actual',data:actual,backgroundColor:'#003366BB',borderRadius:3},{label:'2026E Projected',data:proj,backgroundColor:'#007B8ABB',borderRadius:3}]
-    }, options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:10}}}},scales:{x:{ticks:{font:{size:9}},grid:{color:'#E5E7EB'}},y:{ticks:{font:{size:9}},grid:{display:false}}}}
-  });
-}
-
-// ═══ DATA TABLES ═══
-let activeDataTab = 'pl';
-function initDataTables() {
-  const tabs = [
-    {id:'pl',label:'Income Statement'},{id:'bs',label:'Balance Sheet'},{id:'cf',label:'Cash Flow'},
-    {id:'ratios',label:'Key Ratios'},{id:'pipeline',label:'Pipeline'},{id:'jobs',label:'Jobs by Type'},
-    {id:'rec',label:'Receivables'},{id:'costs',label:'Cost Detail'},{id:'geo',label:'Geographic'},
-  ];
-  document.getElementById('tableTabs').innerHTML = tabs.map(t =>
-    `<button class="table-tab ${t.id===activeDataTab?'active':''}" onclick="switchDataTab('${t.id}')">${t.label}</button>`
-  ).join('');
-  renderTable(activeDataTab);
-}
-
-function switchDataTab(id) {
-  activeDataTab = id;
-  document.querySelectorAll('.table-tab').forEach(b => b.classList.toggle('active', b.textContent === {pl:'Income Statement',bs:'Balance Sheet',cf:'Cash Flow',ratios:'Key Ratios',pipeline:'Pipeline',jobs:'Jobs by Type',rec:'Receivables',costs:'Cost Detail',geo:'Geographic'}[id]));
-  initDataTables();
-}
-
-function renderTable(id) {
-  const wrap = document.getElementById('tableWrap');
-  let html = '';
-
-  if (id === 'pl') {
-    const d = DATA.income;
-    html = '<table><thead><tr><th>Line Item</th>' + d.map(r=>`<th class="right">${r.year}${r.unaudited?' ⚠️':''}</th>`).join('') + '</tr></thead><tbody>';
-    const rows = [
-      {key:'revenue',label:'Revenue',bold:true},{key:'cor',label:'Cost of Revenue'},{key:'gp',label:'Gross Profit',bold:true},
-      {key:'sell',label:'Selling Expenses'},{key:'admin',label:'Admin Expenses'},{key:'other',label:'Other Expenses'},
-      {key:'mgmt',label:'Mgmt Remuneration'},{key:'np',label:'Net Profit',bold:true},
-    ];
-    rows.forEach(r => {
-      html += `<tr${r.bold?' class="bold-row"':''}><td${r.bold?' class="bold"':''}>${r.label}</td>`;
-      d.forEach(y => html += `<td class="right${r.bold?' bold':''}">${y[r.key]?fmtAED(y[r.key]):'—'}</td>`);
-      html += '</tr>';
-    });
-    html += '</tbody></table>';
-  }
-
-  if (id === 'bs') {
-    const d = DATA.balance;
-    html = '<table><thead><tr><th>Line Item</th>' + d.map(r=>`<th class="right">${r.year}</th>`).join('') + '</tr></thead><tbody>';
-    [{k:'ppe',l:'PP&E'},{k:'totalNC',l:'Total Non-Current',b:1},{k:'recNet',l:'Trade Receivables (net)'},
-     {k:'cash',l:'Cash & Equivalents'},{k:'totalCA',l:'Total Current Assets',b:1},{k:'totalAssets',l:'TOTAL ASSETS',b:1},
-     {k:'totalSF',l:'Shareholders\' Funds',b:1},{k:'gratuity',l:'Staff Gratuity'},{k:'payables',l:'Trade Payables'},
-     {k:'totalLiab',l:'Total Liabilities',b:1}].forEach(r => {
-      html += `<tr${r.b?' class="bold-row"':''}><td${r.b?' class="bold"':''}>${r.l}</td>`;
-      d.forEach(y => html += `<td class="right${r.b?' bold':''}">${fmtAED(y[r.k])}</td>`);
-      html += '</tr>';
-    });
-    html += '</tbody></table>';
-  }
-
-  if (id === 'cf') {
-    const d = DATA.cashflow;
-    html = '<table><thead><tr><th>Item</th>'+d.map(r=>`<th class="right">${r.year}</th>`).join('')+'</tr></thead><tbody>';
-    [{k:'profit',l:'Profit for Year'},{k:'dep',l:'+ Depreciation'},{k:'opCF',l:'Net Operating CF',b:1},{k:'capex',l:'CapEx'},{k:'netChange',l:'Net Change in Cash',b:1}].forEach(r => {
-      html += `<tr${r.b?' class="bold-row"':''}><td${r.b?' class="bold"':''}>${r.l}</td>`;
-      d.forEach(y => html += `<td class="right${r.b?' bold':''}${y[r.k]<0?' red':''}">${fmtAED(y[r.k])}</td>`);
-      html += '</tr>';
-    });
-    html += '</tbody></table>';
-  }
-
-  if (id === 'ratios') {
-    const d = DATA.income.filter(r=>r.year>=2022);
-    html = '<table><thead><tr><th>Ratio</th>'+d.map(r=>`<th class="right">${r.year}${r.unaudited?' ⚠️':''}</th>`).join('')+'</tr></thead><tbody>';
-    const staff = DATA.staff;
-    const bs = DATA.balance;
-    const pipe = DATA.pipeline;
-    const ratioRows = d.map(r => {
-      const s = staff.find(x=>x.year===r.year);
-      const b = bs.find(x=>x.year===r.year);
-      const p = pipe.find(x=>x.year===r.year);
-      return {
-        gm:(r.gp/r.revenue*100).toFixed(1)+'%',
-        nm:(r.np/r.revenue*100).toFixed(1)+'%',
-        rpe:s?fmtAED(Math.round(r.revenue/s.n)):'—',
-        ppe:s?fmtAED(Math.round(r.np/s.n)):'—',
-        dso:b?(b.recNet/r.revenue*365).toFixed(0):'—',
-        cr:b?(b.totalCA/b.payables).toFixed(2)+'x':'—',
-        roe:b?(r.np/b.totalSF*100).toFixed(1)+'%':'—',
-        roa:b?(r.np/b.totalAssets*100).toFixed(1)+'%':'—',
-        afj:p?fmtAED(Math.round(r.revenue/p.jobs)):'—',
-        conv:p?(p.jobs/p.enq*100).toFixed(1)+'%':'—',
-      };
-    });
-    ['Gross Margin %:gm','Net Margin %:nm','Revenue/Employee:rpe','Profit/Employee:ppe','DSO (days):dso','Current Ratio:cr','ROE %:roe','ROA %:roa','Avg Fee/Job:afj','Enquiry→Job %:conv'].forEach(s => {
-      const [l,k] = s.split(':');
-      html += `<tr><td>${l}</td>` + ratioRows.map(r=>`<td class="right">${r[k]}</td>`).join('') + '</tr>';
-    });
-    html += '</tbody></table>';
-  }
-
-  if (id === 'pipeline') {
-    html = '<table><thead><tr><th>Year</th><th class="right">Enquiries</th><th class="right">Jobs</th><th class="right">Invoiced</th><th class="right">Pending</th><th class="right">Conv. %</th></tr></thead><tbody>';
-    DATA.pipeline.forEach(p => {
-      html += `<tr><td>${p.year}${p.year===2025?' ⚠️':''}</td><td class="right">${p.enq}</td><td class="right">${p.jobs}</td><td class="right">${p.inv}</td><td class="right${p.pend>100?' bold" style="color:var(--orange)':''}">${p.pend}</td><td class="right">${(p.jobs/p.enq*100).toFixed(1)}%</td></tr>`;
-    });
-    html += '</tbody></table>';
-  }
-
-  if (id === 'jobs') {
-    html = '<table><thead><tr><th>Service Type</th><th class="right">2022</th><th class="right">2023</th><th class="right">2024</th><th class="right">2025 ⚠️</th></tr></thead><tbody>';
-    DATA.jobs.forEach(j => {
-      html += `<tr><td>${j.type}</td><td class="right">${j.y22}</td><td class="right">${j.y23}</td><td class="right">${j.y24}</td><td class="right">${j.y25}</td></tr>`;
-    });
-    html += '</tbody></table>';
-  }
-
-  if (id === 'rec') {
-    html = '<table><thead><tr><th>Ageing Bucket</th><th class="right">2022</th><th class="right">2023</th><th class="right">2024</th></tr></thead><tbody>';
-    DATA.receivables.forEach(r => {
-      html += `<tr><td>${r.bucket}</td><td class="right">${fmtAED(r.y22)}</td><td class="right">${fmtAED(r.y23)}</td><td class="right">${fmtAED(r.y24)}</td></tr>`;
-    });
-    html += '</tbody></table>';
-  }
-
-  if (id === 'costs') {
-    html = '<table><thead><tr><th>Expense</th><th class="right">2022</th><th class="right">2023</th><th class="right">2024</th><th class="right">2025 ⚠️</th></tr></thead><tbody>';
-    DATA.costs.forEach(c => {
-      html += `<tr><td>${c.item}</td><td class="right">${fmtAED(c.y22)}</td><td class="right">${fmtAED(c.y23)}</td><td class="right">${fmtAED(c.y24)}</td><td class="right">${fmtAED(c.y25)}</td></tr>`;
-    });
-    html += '</tbody></table>';
-  }
-
-  if (id === 'geo') {
-    html = '<table><thead><tr><th>Country</th><th class="right">2022</th><th class="right">%</th><th class="right">2023</th><th class="right">%</th><th class="right">2024</th><th class="right">%</th></tr></thead><tbody>';
-    DATA.geo[2024].forEach(g => {
-      const g22 = DATA.geo[2022].find(x=>x.c===g.c);
-      const g23 = DATA.geo[2023].find(x=>x.c===g.c);
-      html += `<tr><td>${g.c}</td><td class="right">${g22?fmtAED(g22.v):'—'}</td><td class="right">${g22?g22.p+'%':'—'}</td><td class="right">${g23?fmtAED(g23.v):'—'}</td><td class="right">${g23?g23.p+'%':'—'}</td><td class="right">${fmtAED(g.v)}</td><td class="right">${g.p}%</td></tr>`;
-    });
-    html += '</tbody></table>';
-  }
-
-  wrap.innerHTML = html;
-}
+initCharts();runScenario();
 </script>
 </body>
 </html>
