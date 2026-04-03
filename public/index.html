@@ -103,7 +103,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-tertiary);co
         <div class="chat-dot"></div>
         <div class="chat-header-text">
           <strong>Quest Marine AI Financial Analyst</strong>
-          <span>7 years of financial data (2019-2025) · Audited statements</span>
+          <span>Powered by Groq (Llama 3) · 7 years of financial data (2019-2025)</span>
         </div>
         <div class="mode-toggle">
           <button class="mode-btn active" id="mode-text" onclick="setMode('text')">Text Chat</button>
@@ -193,35 +193,43 @@ Type below or click a suggested question to get started.</div>
     </div>
   </div>
 
-  <div class="footer">Quest Marine LLC — GIP III Deliverable · <span>SP Jain MGB 2026</span><br>Data: audited financial statements 2019-2024 · 2025 unaudited management accounts<br>Text AI: Google Gemini · Voice AI: ElevenLabs · Dashboard by Aryan</div>
+  <div class="footer">Quest Marine LLC — GIP III Deliverable · <span>SP Jain MGB 2026</span><br>Data: audited financial statements 2019-2024 · 2025 unaudited management accounts<br>Text AI: Groq (Llama 3) · Voice AI: ElevenLabs · Dashboard by Aryan</div>
 </div>
 
-<!-- ============================================================ -->
-<!-- ELEVENLABS VOICE AGENT WIDGET (floating bottom-right button) -->
-<!-- ============================================================ -->
+<!-- ELEVENLABS VOICE WIDGET -->
 <elevenlabs-convai agent-id="agent_3701kmzrfdaje629p0vgq8zf6nxa" avatar-orb-color-1="#D4A843" avatar-orb-color-2="#0A2540" action-text="Voice Analyst" start-call-text="Start voice call" end-call-text="End call" listening-text="Listening..." speaking-text="Analyst speaking..."></elevenlabs-convai>
 <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
 <!-- CHART.JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// GEMINI AI CHAT
-var GEMINI_KEY='AIzaSyAL1BnTleorZ4Ou560gkJlWtmaFRu0b6Vg';
+// ================================================================
+// GROQ AI CHAT — using Llama 3 via Groq API
+// ================================================================
+var GROQ_KEY='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';
 var chatHistory=[];
-var QM_PROMPT='You are the Quest Marine Financial Intelligence Analyst. Senior finance professional. Concise, data-driven, professional tone. Use specific AED figures.\n\nCOMPANY: Quest Marine LLC, B2B marine surveying, Dubai UAE. Est 2010. Services: vessel inspections, cargo/H&M/P&I surveys, risk assessments, ship management. Job-based revenue. Pure service, no assets/inventory. Shareholders: Uday Moorthi 50%, Anita 25%, Rohan 25%. 16 employees (12 surveyors, 4 admin). Finance Mgr: Riddhi Moorthi.\n\nINCOME STATEMENT (AED): Revenue: 2019:4,110,000|2020:3,940,000|2021:4,680,000|2022:5,353,463|2023:5,541,579|2024:6,539,201|2025*:7,798,820. Net Profit: 2019:750,000|2020:450,000|2021:680,000|2022:566,573|2023:474,862|2024:327,416|2025*:677,573. COR: 2022:2,726,221|2023:2,685,526|2024:3,380,951. GP: 2022:2,627,242|2023:2,856,053|2024:3,158,250. Subcontracting: 2022:858,911|2023:644,302|2024:833,482|2025:872,214. Survey expenses: 2022:36,733|2023:71,723|2024:197,720|2025:289,382. Mgmt Remuneration: 2022:960,000|2023:1,140,000|2024:1,200,000|2025:1,440,000. Selling: 2022:121,645|2023:59,910|2024:118,336|2025:109,324. EBITDA: 2023:502,877|2024:359,007.\n\nMARGINS: Gross: 2022:49%|2023:52%|2024:48%. Net: 2019:18.2%|2020:11.4%|2021:14.5%|2022:10.6%|2023:8.6%|2024:5.0%|2025:8.7%\n\nBALANCE SHEET (AED): 2024: Assets 3,052,162, PPE 27,019, Receivables(net) 2,158,771, Cash 596,391, SF 2,280,401, Payables 315,989, Gratuity 455,772, Liabilities 771,761, NO DEBT. 2023: Assets 2,608,431, Receivables 1,694,922, Cash 609,646, SF 1,952,985. 2022: Assets 2,471,898, Receivables 1,864,273, Cash 345,134, SF 1,478,022.\n\nEFFICIENCY: Staff: 2022:12|2023:14|2024:18|2025:16. Rev/Emp: 2022:446K|2023:396K|2024:363K|2025:487K. DSO~130d (2024). ECL 175,120. Bad debts 63,700. Receivables: GBP 48.5%, AED 26.8%, SGD 13.6%.\n\nPIPELINE: Enquiries: 2022:751|2023:729|2024:1,025|2025:1,252. Jobs: 2022:696|2023:651|2024:973|2025:1,136. Top: Hull&P&I Damage 413(2025) from 102(2022). Geo: UK 35%, UAE 31%, SG 11%, DE 6%. Growing: SG, DE, IT, US.\n\nDIVIDENDS: 2022:2M|2023:800K|2024:Nil.\n\nRATIOS (22/23/24): CR 3.79/9.69/9.52. QR 3.46/8.71/8.73. ROA 22.9/18.2/10.7%. ROE 38.3/24.3/14.4%. D/E 0.67/0.34/0.34. AT 2.17/2.12/2.14. Altman Z 8.18/9.92/8.72 (all safe).\n\nCASH FLOW 2024: Operating CF NEGATIVE AED 319 (receivables grew 454K).\n\nRULES: 1)ONLY use data above, NEVER fabricate. 2)Flag 2025 as UNAUDITED. 3)Rev/Employee is PRIMARY efficiency metric. 4)DuPont/Altman limited for asset-light firms. 5)Comparables: ABL Group, Constellation Marine, Matthew Daniel (NOT ADNOC/Gulf Nav). 6)Tax: 9% on profits>370K. 7)Key tension: revenue growing but costs outpacing, margin compressed 2022-2024, 2025 recovery.';
+var QM_SYSTEM='You are the Quest Marine Financial Intelligence Analyst. Senior finance professional. Concise, data-driven, professional tone. Use specific AED figures.\n\nCOMPANY: Quest Marine LLC, B2B marine surveying, Dubai UAE. Est 2010. Services: vessel inspections, cargo/H&M/P&I surveys, risk assessments, ship management. Job-based revenue. Pure service, no assets/inventory. Shareholders: Uday Moorthi 50%, Anita 25%, Rohan 25%. 16 employees (12 surveyors, 4 admin). Finance Mgr: Riddhi Moorthi.\n\nINCOME STATEMENT (AED): Revenue: 2019:4,110,000|2020:3,940,000|2021:4,680,000|2022:5,353,463|2023:5,541,579|2024:6,539,201|2025*:7,798,820. Net Profit: 2019:750,000|2020:450,000|2021:680,000|2022:566,573|2023:474,862|2024:327,416|2025*:677,573. COR: 2022:2,726,221|2023:2,685,526|2024:3,380,951. GP: 2022:2,627,242|2023:2,856,053|2024:3,158,250. Subcontracting: 2022:858,911|2023:644,302|2024:833,482|2025:872,214. Survey expenses: 2022:36,733|2023:71,723|2024:197,720|2025:289,382. Mgmt Remuneration: 2022:960,000|2023:1,140,000|2024:1,200,000|2025:1,440,000. Selling: 2022:121,645|2023:59,910|2024:118,336|2025:109,324. EBITDA: 2023:502,877|2024:359,007.\n\nMARGINS: Gross: 2022:49%|2023:52%|2024:48%. Net: 2019:18.2%|2020:11.4%|2021:14.5%|2022:10.6%|2023:8.6%|2024:5.0%|2025:8.7%\n\nBALANCE SHEET (AED): 2024: Assets 3,052,162, PPE 27,019, Receivables(net) 2,158,771, Cash 596,391, SF 2,280,401, Payables 315,989, Gratuity 455,772, Liabilities 771,761, NO DEBT. 2023: Assets 2,608,431, Receivables 1,694,922, Cash 609,646, SF 1,952,985. 2022: Assets 2,471,898, Receivables 1,864,273, Cash 345,134, SF 1,478,022.\n\nEFFICIENCY: Staff: 2022:12|2023:14|2024:18|2025:16. Rev/Emp: 2022:446K|2023:396K|2024:363K|2025:487K. DSO~130d (2024). ECL 175,120. Bad debts 63,700. Receivables: GBP 48.5%, AED 26.8%, SGD 13.6%.\n\nPIPELINE: Enquiries: 2022:751|2023:729|2024:1,025|2025:1,252. Jobs: 2022:696|2023:651|2024:973|2025:1,136. Top: Hull&P&I Damage 413(2025) from 102(2022). Geo: UK 35%, UAE 31%, SG 11%, DE 6%. Growing: SG, DE, IT, US.\n\nDIVIDENDS: 2022:2M|2023:800K|2024:Nil.\n\nRATIOS (22/23/24): CR 3.79/9.69/9.52. QR 3.46/8.71/8.73. ROA 22.9/18.2/10.7%. ROE 38.3/24.3/14.4%. D/E 0.67/0.34/0.34. AT 2.17/2.12/2.14. Altman Z 8.18/9.92/8.72 (all safe).\n\nCASH FLOW 2024: Operating CF NEGATIVE AED 319 (receivables grew 454K).\n\nRULES: 1)ONLY use data above, NEVER fabricate. 2)Flag 2025 as UNAUDITED. 3)Rev/Employee is PRIMARY efficiency metric. 4)DuPont/Altman limited for asset-light firms. 5)Comparables: ABL Group, Constellation Marine, Matthew Daniel (NOT ADNOC/Gulf Nav). 6)Tax: 9% on profits>370K. 7)Key tension: revenue growing but costs outpacing, margin compressed 2022-2024, 2025 recovery.';
 
 function addMsg(role,text){var el=document.createElement('div');el.className='msg '+role;el.textContent=text;document.getElementById('chat-messages').appendChild(el);document.getElementById('chat-messages').scrollTop=999999;return el;}
 function askQ(q){document.getElementById('chat-input').value=q;sendMsg();}
+
 async function sendMsg(){
   var inp=document.getElementById('chat-input'),q=inp.value.trim();if(!q)return;inp.value='';addMsg('user',q);
   document.getElementById('send-btn').disabled=true;
-  chatHistory.push({role:'user',parts:[{text:q}]});
+  chatHistory.push({role:'user',content:q});
   var typ=addMsg('bot','Analyzing...');typ.classList.add('typing');
+
+  var messages=[{role:'system',content:QM_SYSTEM}].concat(chatHistory);
+
   try{
-    var r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:QM_PROMPT}]},contents:chatHistory,generationConfig:{temperature:0.3,maxOutputTokens:1500}})});
+    var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:messages,temperature:0.3,max_tokens:1500})
+    });
     var d=await r.json();
     if(d.error){typ.textContent='Error: '+(d.error.message||'API failed');typ.classList.remove('typing');}
-    else{var a=d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts&&d.candidates[0].content.parts[0]?d.candidates[0].content.parts[0].text:'No response.';typ.textContent=a;typ.classList.remove('typing');chatHistory.push({role:'model',parts:[{text:a}]});}
+    else{var a=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'No response.';typ.textContent=a;typ.classList.remove('typing');chatHistory.push({role:'assistant',content:a});}
   }catch(e){typ.textContent='Error: '+e.message;typ.classList.remove('typing');}
   document.getElementById('send-btn').disabled=false;document.getElementById('chat-messages').scrollTop=999999;
 }
@@ -234,7 +242,9 @@ function setMode(mode){
   document.getElementById('chat-suggestions').style.display=mode==='text'?'flex':'none';
 }
 
-// DASHBOARD
+// ================================================================
+// DASHBOARD CHARTS
+// ================================================================
 var NAVY='#0A2540',GOLD='#D4A843',TEAL='#0F6E56',CORAL='#D85A30',BLUE='#378ADD',PINK='#D4537E',PURPLE='#534AB7';
 var years=['2019','2020','2021','2022','2023','2024','2025*'];
 var rev=[4.11,3.94,4.68,5.35,5.54,6.54,7.80];
